@@ -619,3 +619,47 @@ label.field textarea { min-height: 5.5rem; resize: vertical; }
   .case:hover { transform: none; }
   .case:hover .poster img { transform: none; }
 }
+
+/* game stats */
+.stats-row,
+.stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+}
+.stats-bar {
+  margin: 0 0 1rem;
+}
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(124, 108, 255, 0.1);
+  border: 1px solid rgba(124, 108, 255, 0.25);
+  font-size: 0.75rem;
+  color: var(--fg);
+  line-height: 1.2;
+}
+.stat-pill i {
+  font-style: normal;
+  opacity: 0.85;
+}
+.stat-pill b {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stat-pill em {
+  font-style: normal;
+  color: var(--muted);
+  font-weight: 500;
+}
+.stat-pill.site {
+  background: rgba(94, 234, 212, 0.1);
+  border-color: rgba(94, 234, 212, 0.3);
+}
+.case-body .stats-row {
+  margin-top: 0.55rem;
+}
