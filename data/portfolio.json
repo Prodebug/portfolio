@@ -17,7 +17,9 @@
         "label": "Hexagonia",
         "url": "https://muov.itch.io/hexagonia"
       }
-    ]
+    ],
+    "roleEn": "indie developer",
+    "bioEn": "I create indie games, build fictional worlds and write stories. Platformers and experiments with mechanics."
   },
   "games": [
     {
@@ -32,7 +34,8 @@
       ],
       "platforms": [
         "Windows",
-        "Android"
+        "Android",
+        "Web"
       ],
       "description": "🎃 ХЭЛЛОУИНСКИЙ ИВЕНТ УЖЕ В ИГРЕ! 🎃\n\nGlance Up &mdash; пиксельный платформер-бесконечный прыгун. Прыгай по платформам всё выше, уворачивайся от деревьев-монстров и собирай монеты.\n\nВ Хэллоуинском режиме:\n\n• Фиолетовое небо и красная луна\n\n• Конфеты, которые падают на платформах\n\n• Новый персонаж &mdash; Тыквенный Дух (30 конфет): парение, двойной прыжок и призрачный щит",
       "cover": "https://img.itch.zone/aW1nLzMxNDUzMDUyLnBuZw==/original/pJ2EMu.png",
@@ -87,5 +90,5 @@
       "itchUrl": "https://muov.itch.io/hexagonia"
     }
   ],
-  "updatedAt": "2026-10-27T21:08:40Z"
+  "updatedAt": "2026-10-27T21:37:26Z"
 }
