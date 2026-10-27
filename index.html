@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Muov — портфолио игр</title>
-  <meta name="description" content="Indie developer Muov. Platformers, worlds and stories. Play Hexagonia, Glance Up and more." />
-  <meta name="theme-color" content="#07080d" />
+  <meta name="description" content="Indie developer Muov. Platformers, worlds and stories." />
+  <meta name="theme-color" content="#050508" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
 
   <header class="top">
     <div class="top-inner">
@@ -37,23 +37,21 @@
             <input type="file" id="fileImport" accept="application/json,.json" hidden />
           </label>
           <button type="button" class="btn primary" id="btnAdd">+ Игра</button>
-          <button type="button" class="btn ghost" id="btnLogout" title="Выйти">Выйти</button>
+          <button type="button" class="btn ghost" id="btnLogout">Выйти</button>
         </div>
-        <button type="button" class="btn ghost" id="btnLogin" title="Вход">Вход</button>
+        <button type="button" class="btn ghost" id="btnLogin">Вход</button>
       </nav>
     </div>
   </header>
 
   <main>
     <section class="hero">
-      <div class="hero-inner">
-        <p class="eyebrow" id="heroCity">itch.io</p>
-        <h1 class="display" id="heroTitle">Muov</h1>
-        <p class="lede" id="heroBio"></p>
-        <div class="hero-links" id="heroLinks"></div>
-        <div class="sync" id="syncStatus" hidden></div>
-        <p class="admin-badge" id="adminBadge" hidden></p>
-      </div>
+      <p class="eyebrow" id="heroCity">itch.io</p>
+      <h1 class="display" id="heroTitle">Muov</h1>
+      <p class="lede" id="heroBio"></p>
+      <div class="hero-links" id="heroLinks"></div>
+      <div class="sync" id="syncStatus" hidden></div>
+      <p class="admin-badge" id="adminBadge" hidden></p>
     </section>
 
     <section class="shelf-wrap" id="shelf">
@@ -67,45 +65,27 @@
         </div>
         <input type="search" class="search" id="search" placeholder="Поиск…" autocomplete="off" />
       </div>
-
       <div class="grid" id="grid" role="list"></div>
       <p class="empty" id="empty" hidden>Игр пока нет.</p>
-    </section>
-
-    <section class="comments-wrap" id="comments">
-      <div class="comments-inner">
-        <h2 class="section-title" id="commentsTitle">Комментарии</h2>
-        <p class="comments-hint" id="commentsHint">
-          Обсуждение сайта. Комментарии к играм — внутри карточки игры (открой игру).
-        </p>
-        <div class="giscus"></div>
-        <script src="https://giscus.app/client.js"
-          data-repo="Prodebug/portfolio"
-          data-repo-id="R_kgDOVZsDQw"
-          data-category="General"
-          data-category-id="DIC_kwDOVZsDQ84DJxqO"
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="top"
-          data-theme="transparent_dark"
-          data-lang="ru"
-          data-loading="lazy"
-          crossorigin="anonymous"
-          async>
-        </script>
-      </div>
     </section>
   </main>
 
   <footer class="foot">
     <p>
-      Данные с
       <a href="https://muov.itch.io/" target="_blank" rel="noopener">muov.itch.io</a>
-      · синхронизация через GitHub Actions
+      · GitHub Pages
     </p>
   </footer>
+
+  <!-- hidden giscus config for per-game comments (no site-wide widget) -->
+  <script type="application/json" id="giscusConfig">
+  {
+    "repo": "Prodebug/portfolio",
+    "repoId": "R_kgDOVZsDQw",
+    "category": "General",
+    "categoryId": "DIC_kwDOVZsDQ84DJxqO"
+  }
+  </script>
 
   <dialog class="sheet" id="dialog">
     <div class="sheet-body" id="dialogBody"></div>
