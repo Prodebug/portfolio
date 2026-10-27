@@ -48,7 +48,7 @@
       "playUrl": "https://muov.itch.io/glance-up-halloween-edition",
       "trailerUrl": "",
       "repoUrl": "",
-      "featured": false,
+      "featured": true,
       "tags": [],
       "itchId": "5245590",
       "itchUrl": "https://muov.itch.io/glance-up-halloween-edition"
@@ -78,7 +78,7 @@
       "playUrl": "https://muov.itch.io/hexagonia",
       "trailerUrl": "",
       "repoUrl": "",
-      "featured": true,
+      "featured": false,
       "tags": [
         "2D",
         "Godot",
@@ -90,5 +90,5 @@
       "itchUrl": "https://muov.itch.io/hexagonia"
     }
   ],
-  "updatedAt": "2026-10-27T21:43:34Z"
+  "updatedAt": "2026-10-27T22:00:15Z"
 }
