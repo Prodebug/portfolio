@@ -196,7 +196,9 @@
       gameCommentsHint: "Войди через GitHub, чтобы написать комментарий",
       downloads: "скачиваний",
       views: "просмотров",
+      plays: "запусков",
       rating: "оценка",
+      siteViews: "на сайте",
     },
     en: {
       roleDefault: "indie developer",
@@ -289,7 +291,9 @@
       gameCommentsHint: "Sign in with GitHub to leave a comment",
       downloads: "downloads",
       views: "views",
+      plays: "plays",
       rating: "rating",
+      siteViews: "on site",
     },
   };
 
@@ -311,17 +315,56 @@
     );
   }
 
-  function formatStats(stats) {
-    if (!stats || typeof stats !== "object") return "";
-    const bits = [];
-    if (typeof stats.downloads === "number")
-      bits.push(`<span title="itch">↓ ${stats.downloads} ${t("downloads")}</span>`);
-    if (typeof stats.views === "number")
-      bits.push(`<span title="itch">👁 ${stats.views} ${t("views")}</span>`);
-    if (typeof stats.rating === "number")
-      bits.push(`<span>★ ${stats.rating}</span>`);
-    return bits.join("");
+  function formatNum(n) {
+    if (typeof n !== "number" || !isFinite(n)) return null;
+    if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+    return String(Math.round(n));
   }
+
+  function formatStats(stats, compact) {
+    if (!stats || typeof stats !== "object") return "";
+    const items = [];
+    const push = (key, icon, label) => {
+      const n = stats[key];
+      if (typeof n === "number" && isFinite(n) && n >= 0) {
+        items.push(
+          `<span class="stat-pill" title="${esc(label)}"><i>${icon}</i><b>${esc(
+            formatNum(n)
+          )}</b>${compact ? "" : ` <em>${esc(label)}</em>`}</span>`
+        );
+      }
+    };
+    push("downloads", "↓", t("downloads"));
+    push("views", "👁", t("views"));
+    push("plays", "▶", t("plays"));
+    if (typeof stats.rating === "number") {
+      items.push(
+        `<span class="stat-pill" title="${esc(t("rating"))}"><i>★</i><b>${esc(
+          String(stats.rating)
+        )}</b></span>`
+      );
+    }
+    if (!items.length) return "";
+    return `<div class="stats-row">${items.join("")}</div>`;
+  }
+
+  async function bumpSiteView(gameId) {
+    try {
+      const key = String(gameId || "unknown").replace(/[^a-z0-9_-]/gi, "-").slice(0, 48);
+      const res = await fetch(
+        `https://api.counterapi.dev/v1/muov-portfolio/${encodeURIComponent(key)}/up`,
+        { cache: "no-store" }
+      );
+      if (!res.ok) return null;
+      const data = await res.json();
+      const value = data?.value ?? data?.count;
+      return typeof value === "number" ? value : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
 
   let published = structuredClone(SEED);
   let state = structuredClone(SEED);
@@ -641,8 +684,7 @@
       if (g.year) metaBits.push(`<span>${esc(g.year)}</span>`);
       (g.genres || []).slice(0, 2).forEach((x) => metaBits.push(`<span>${esc(x)}</span>`));
       (g.platforms || []).slice(0, 2).forEach((x) => metaBits.push(`<span>${esc(x)}</span>`));
-      const statsHtml = formatStats(g.stats);
-      if (statsHtml) metaBits.push(statsHtml);
+      const statsHtml = formatStats(g.stats, true);
       art.innerHTML = `
         <button type="button" class="case-btn" data-open="${esc(g.id)}" aria-label="${esc(g.title)}">
           <div class="poster">
@@ -653,6 +695,7 @@
             <p class="case-title">${esc(g.title)}</p>
             ${g.tagline ? `<p class="case-tagline">${esc(g.tagline)}</p>` : ""}
             <div class="meta">${metaBits.join("")}</div>
+            ${statsHtml}
           </div>
         </button>`;
       grid.appendChild(art);
@@ -806,8 +849,8 @@
             ${(g.genres || []).map((x) => `<span>${esc(x)}</span>`).join("")}
             ${(g.platforms || []).map((x) => `<span>${esc(x)}</span>`).join("")}
             ${(g.tags || []).map((x) => `<span>${esc(x)}</span>`).join("")}
-            ${formatStats(g.stats)}
           </div>
+          <div id="gameStatsBar" class="stats-bar">${formatStats(g.stats, false)}</div>
           <div class="sheet-actions">
             ${play ? `<a class="btn primary" href="${esc(play)}" target="_blank" rel="noopener">${esc(t("play"))}</a>` : ""}
             ${trailer ? `<a class="btn" href="${esc(trailer)}" target="_blank" rel="noopener">${esc(t("trailer"))}</a>` : ""}
@@ -839,6 +882,21 @@
         renderGrid();
       };
     mountGameGiscus(dialogBody.querySelector("#gameGiscusHost"), id);
+    bumpSiteView(id).then((n) => {
+      if (n == null) return;
+      const game = getGame(id);
+      if (!game) return;
+      game.stats = game.stats || {};
+      // site open counter shown alongside manual/itch views
+      game.stats.siteViews = n;
+      const bar = dialogBody.querySelector("#gameStatsBar");
+      if (bar) {
+        const site = `<span class="stat-pill site"><i>🌐</i><b>${esc(
+          formatNum(n)
+        )}</b> <em>${esc(t("siteViews"))}</em></span>`;
+        bar.innerHTML = (formatStats(game.stats, false) || "") + site;
+      }
+    });
   }
 
   function blankGame() {
@@ -938,6 +996,23 @@
         </div>
         <label class="field">${esc(t("cover"))}<input name="coverFile" type="file" accept="image/*" /></label>
         <label class="field">${esc(t("shots"))}<input name="shotsFile" type="file" accept="image/*" multiple /></label>
+        <div class="form-grid two">
+          <label class="field">${esc(t("downloads"))}
+            <input name="downloads" type="number" min="0" step="1" value="${esc(
+              g.stats && g.stats.downloads != null ? g.stats.downloads : ""
+            )}" placeholder="0" />
+          </label>
+          <label class="field">${esc(t("views"))}
+            <input name="views" type="number" min="0" step="1" value="${esc(
+              g.stats && g.stats.views != null ? g.stats.views : ""
+            )}" placeholder="0" />
+          </label>
+        </div>
+        <label class="field">${esc(t("plays"))}
+          <input name="plays" type="number" min="0" step="1" value="${esc(
+            g.stats && g.stats.plays != null ? g.stats.plays : ""
+          )}" placeholder="0" />
+        </label>
         <label class="check-row"><input type="checkbox" name="featured" ${
           g.featured ? "checked" : ""
         } /> ${esc(t("featured"))}</label>
@@ -971,7 +1046,23 @@
         trailerUrl: String(fd.get("trailerUrl") || "").trim(),
         repoUrl: String(fd.get("repoUrl") || "").trim(),
         featured: form.featured.checked,
+        stats: {
+          ...(g.stats || {}),
+          downloads: fd.get("downloads") === "" || fd.get("downloads") == null
+            ? null
+            : Number(fd.get("downloads")),
+          views: fd.get("views") === "" || fd.get("views") == null
+            ? null
+            : Number(fd.get("views")),
+          plays: fd.get("plays") === "" || fd.get("plays") == null
+            ? null
+            : Number(fd.get("plays")),
+        },
       };
+      // clean NaN
+      ["downloads", "views", "plays"].forEach((k) => {
+        if (next.stats[k] != null && !isFinite(next.stats[k])) next.stats[k] = null;
+      });
       try {
         if (form.coverFile.files[0])
           next.cover = await fileToDataUrl(form.coverFile.files[0], 1280, 0.82);
