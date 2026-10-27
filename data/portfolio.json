@@ -21,12 +21,42 @@
   },
   "games": [
     {
+      "id": "glance-up-halloween-edition",
+      "title": "Glance Up: Halloween Edition",
+      "tagline": "",
+      "year": 2026,
+      "role": "разработка",
+      "status": "released",
+      "genres": [
+        "Platformer"
+      ],
+      "platforms": [
+        "Windows",
+        "Android"
+      ],
+      "description": "🎃 ХЭЛЛОУИНСКИЙ ИВЕНТ УЖЕ В ИГРЕ! 🎃\n\nGlance Up &mdash; пиксельный платформер-бесконечный прыгун. Прыгай по платформам всё выше, уворачивайся от деревьев-монстров и собирай монеты.\n\nВ Хэллоуинском режиме:\n\n• Фиолетовое небо и красная луна\n\n• Конфеты, которые падают на платформах\n\n• Новый персонаж &mdash; Тыквенный Дух (30 конфет): парение, двойной прыжок и призрачный щит",
+      "cover": "https://img.itch.zone/aW1nLzMxNDUzMDUyLnBuZw==/original/pJ2EMu.png",
+      "shots": [
+        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTQ1MzA5NC5wbmc=/original/dbhEC9.png",
+        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTQ1MzEwNS5wbmc=/original/QPch7I.png",
+        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTQ1MzE2Mi5wbmc=/original/XJ8tcR.png",
+        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTQ1MzE5NC5wbmc=/original/j62g02.png"
+      ],
+      "playUrl": "https://muov.itch.io/glance-up-halloween-edition",
+      "trailerUrl": "",
+      "repoUrl": "",
+      "featured": false,
+      "tags": [],
+      "itchId": "5245590",
+      "itchUrl": "https://muov.itch.io/glance-up-halloween-edition"
+    },
+    {
       "id": "hexagonia",
       "title": "Hexagonia",
       "tagline": "Платформер с Godot · GMTK Game Jam 2026",
       "year": 2026,
       "role": "разработка",
-      "status": "released",
+      "status": "jam",
       "genres": [
         "Platformer",
         "Adventure"
@@ -37,9 +67,10 @@
       "description": "Hello, dear players! We are a newly formed team, and we are still learning the ropes.\n\nWe decided to create a game and participate in Game Jam 2026.\n\nWe used Aseprite, Canva, and Godot.\n\nThank you for playing our game.",
       "cover": "covers/hexagonia.jpg",
       "shots": [
-        "covers/hex-shot1.jpg",
-        "covers/hex-shot2.jpg",
-        "covers/hex-shot3.jpg"
+        "https://img.itch.zone/aW1hZ2UvNDgyMDkxNS8yODc0NjQ4NS5wbmc=/original/UFDXEn.png",
+        "https://img.itch.zone/aW1hZ2UvNDgyMDkxNS8yODc0NjQ4Ni5wbmc=/original/lRgZax.png",
+        "https://img.itch.zone/aW1hZ2UvNDgyMDkxNS8yODc0NjQ4Ny5wbmc=/original/5ZWky3.png",
+        "https://img.itch.zone/aW1hZ2UvNDgyMDkxNS8yODc0NzMwOS5wbmc=/original/dG69cq.png"
       ],
       "playUrl": "https://muov.itch.io/hexagonia",
       "trailerUrl": "",
@@ -56,5 +87,5 @@
       "itchUrl": "https://muov.itch.io/hexagonia"
     }
   ],
-  "updatedAt": "2026-10-27T18:14:58Z"
+  "updatedAt": "2026-10-27T21:08:40Z"
 }
