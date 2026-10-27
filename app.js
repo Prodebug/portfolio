@@ -189,7 +189,7 @@
       shotsFail: "Не удалось обработать скриншоты",
       navLabel: "Действия",
       pageTitle: "Muov — портфолио игр",
-      comments: "Комментарии к сайту",
+      comments: "Комментарии",
       commentsHint:
         "Общий чат. Чтобы обсудить игру — открой её карточку, комментарии внизу окна.",
       gameComments: "Комментарии к этой игре",
@@ -282,7 +282,7 @@
       shotsFail: "Could not process screenshots",
       navLabel: "Actions",
       pageTitle: "Muov — game portfolio",
-      comments: "Site comments",
+      comments: "Comments",
       commentsHint:
         "General discussion. To comment on a game — open its card; comments are at the bottom.",
       gameComments: "Comments on this game",
@@ -476,20 +476,23 @@
   }
 
   function giscusBaseAttrs() {
-    const s = document.querySelector('script[src*="giscus.app/client.js"]');
+    try {
+      const el = document.getElementById("giscusConfig");
+      if (el) {
+        const c = JSON.parse(el.textContent);
+        if (c.repoId && c.categoryId) return c;
+      }
+    } catch (_) {}
     return {
-      repo: s?.getAttribute("data-repo") || "Prodebug/portfolio",
-      repoId: s?.getAttribute("data-repo-id") || "R_kgDOVZsDQw",
-      category: s?.getAttribute("data-category") || "General",
-      categoryId: s?.getAttribute("data-category-id") || "DIC_kwDOVZsDQ84DJxqO",
+      repo: "Prodebug/portfolio",
+      repoId: "R_kgDOVZsDQw",
+      category: "General",
+      categoryId: "DIC_kwDOVZsDQ84DJxqO",
     };
   }
 
   function setGiscusLang(code) {
     const gLang = code === "en" ? "en" : "ru";
-    document.querySelectorAll('script[src*="giscus.app/client.js"]').forEach((script) => {
-      script.setAttribute("data-lang", gLang);
-    });
     document.querySelectorAll("iframe.giscus-frame").forEach((iframe) => {
       try {
         iframe.contentWindow.postMessage(
