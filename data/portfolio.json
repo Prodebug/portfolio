@@ -1,0 +1,60 @@
+{
+  "profile": {
+    "name": "Muov",
+    "role": "инди-разработчик",
+    "city": "itch.io",
+    "bio": "Создаю инди-игры, выстраиваю вымышленные миры и пишу истории. Платформеры и эксперименты с механиками.",
+    "links": [
+      {
+        "label": "itch.io",
+        "url": "https://muov.itch.io/"
+      },
+      {
+        "label": "Discord",
+        "url": "https://discord.gg/8GpzEHQqG3"
+      },
+      {
+        "label": "Hexagonia",
+        "url": "https://muov.itch.io/hexagonia"
+      }
+    ]
+  },
+  "games": [
+    {
+      "id": "hexagonia",
+      "title": "Hexagonia",
+      "tagline": "Платформер с Godot · GMTK Game Jam 2026",
+      "year": 2026,
+      "role": "разработка",
+      "status": "released",
+      "genres": [
+        "Platformer",
+        "Adventure"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "description": "Hello, dear players! We are a newly formed team, and we are still learning the ropes.\n\nWe decided to create a game and participate in Game Jam 2026.\n\nWe used Aseprite, Canva, and Godot.\n\nThank you for playing our game.",
+      "cover": "covers/hexagonia.jpg",
+      "shots": [
+        "covers/hex-shot1.jpg",
+        "covers/hex-shot2.jpg",
+        "covers/hex-shot3.jpg"
+      ],
+      "playUrl": "https://muov.itch.io/hexagonia",
+      "trailerUrl": "",
+      "repoUrl": "",
+      "featured": true,
+      "tags": [
+        "2D",
+        "Godot",
+        "Pixel Art",
+        "Story Rich",
+        "No AI"
+      ],
+      "itchId": "4820915",
+      "itchUrl": "https://muov.itch.io/hexagonia"
+    }
+  ],
+  "updatedAt": "2026-10-27T18:14:58Z"
+}

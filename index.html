@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Muov — портфолио игр</title>
+  <meta name="description" content="Инди-разработчик Muov. Платформеры, миры и истории. Hexagonia и другие проекты." />
+  <meta name="theme-color" content="#0e0c0a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="#shelf">
+        <span class="brand-mark">M</span>
+        <span class="brand-text">
+          <strong id="brandName">Muov</strong>
+          <small id="brandRole">инди-разработчик</small>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Действия">
+        <div id="adminNav" class="admin-nav" hidden>
+          <button type="button" class="btn ghost" id="btnProfile">Профиль</button>
+          <button type="button" class="btn ghost" id="btnExport">Экспорт</button>
+          <label class="btn ghost file-btn">
+            Импорт
+            <input type="file" id="fileImport" accept="application/json,.json" hidden />
+          </label>
+          <button type="button" class="btn primary" id="btnAdd">+ Игра</button>
+          <button type="button" class="btn ghost" id="btnLogout" title="Выйти">Выйти</button>
+        </div>
+        <button type="button" class="btn ghost" id="btnLogin" title="Вход для владельца">Вход</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow" id="heroCity">itch.io · Discord</p>
+        <h1 class="display" id="heroTitle">Muov</h1>
+        <p class="lede" id="heroBio">
+          Создаю инди-игры, выстраиваю вымышленные миры и пишу истории.
+        </p>
+        <div class="hero-links" id="heroLinks"></div>
+        <div class="sync" id="syncStatus" hidden></div>
+        <p class="admin-badge" id="adminBadge" hidden>Режим админа — правки локально; чтобы обновить сайт для всех — Экспорт → commit в GitHub</p>
+      </div>
+    </section>
+
+    <section class="shelf-wrap" id="shelf">
+      <div class="shelf-head">
+        <h2 class="section-title">Полка</h2>
+        <div class="filters" id="filters">
+          <button type="button" class="chip active" data-filter="all">Все</button>
+          <button type="button" class="chip" data-filter="released">Релиз</button>
+          <button type="button" class="chip" data-filter="wip">В работе</button>
+          <button type="button" class="chip" data-filter="jam">Джем</button>
+        </div>
+        <input type="search" class="search" id="search" placeholder="Поиск по названию…" autocomplete="off" />
+      </div>
+
+      <div class="grid" id="grid" role="list"></div>
+      <p class="empty" id="empty" hidden>Игр пока нет.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>
+      Данные с
+      <a href="https://muov.itch.io/" target="_blank" rel="noopener">muov.itch.io</a>
+      · синхронизация через GitHub Actions
+    </p>
+  </footer>
+
+  <dialog class="sheet" id="dialog">
+    <div class="sheet-body" id="dialogBody"></div>
+  </dialog>
+
+  <div class="drop-veil" id="dropVeil" hidden>
+    <p>Отпусти JSON — импортирую портфолио</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
