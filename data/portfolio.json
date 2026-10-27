@@ -2,8 +2,10 @@
   "profile": {
     "name": "Muov",
     "role": "инди-разработчик",
+    "roleEn": "indie developer",
     "city": "itch.io",
-    "bio": "Создаю инди-игры, выстраиваю вымышленные миры и пишу истории. Платформеры и эксперименты с механиками.",
+    "bio": "Создаю игры",
+    "bioEn": "I create game",
     "links": [
       {
         "label": "itch.io",
@@ -17,9 +19,7 @@
         "label": "Hexagonia",
         "url": "https://muov.itch.io/hexagonia"
       }
-    ],
-    "roleEn": "indie developer",
-    "bioEn": "I create indie games, build fictional worlds and write stories. Platformers and experiments with mechanics."
+    ]
   },
   "games": [
     {
@@ -48,14 +48,14 @@
       "playUrl": "https://muov.itch.io/glance-up-halloween-edition",
       "trailerUrl": "",
       "repoUrl": "",
-      "featured": true,
+      "featured": false,
       "tags": [],
       "itchId": "5245590",
       "itchUrl": "https://muov.itch.io/glance-up-halloween-edition",
       "stats": {
-        "downloads": 0,
-        "views": 0,
-        "plays": 0
+        "downloads": null,
+        "views": null,
+        "plays": null
       }
     },
     {
@@ -94,11 +94,11 @@
       "itchId": "4820915",
       "itchUrl": "https://muov.itch.io/hexagonia",
       "stats": {
-        "downloads": 0,
-        "views": 0,
-        "plays": 0
+        "downloads": 10,
+        "views": 34,
+        "plays": 10
       }
     }
   ],
-  "updatedAt": "2026-10-27T22:46:44Z"
+  "updatedAt": "2026-10-27T22:50:24.386Z"
 }
