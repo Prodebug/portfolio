@@ -44,7 +44,8 @@
       ],
       "platforms": [
         "Windows",
-        "Android"
+        "Android",
+        "Web"
       ],
       "description": "🎃 ХЭЛЛОУИНСКИЙ ИВЕНТ УЖЕ В ИГРЕ! 🎃\n\nGlance Up &mdash; пиксельный платформер-бесконечный прыгун. Прыгай по платформам всё выше, уворачивайся от деревьев-монстров и собирай монеты.\n\nВ Хэллоуинском режиме:\n\n• Фиолетовое небо и красная луна\n\n• Конфеты, которые падают на платформах\n\n• Новый персонаж &mdash; Тыквенный Дух (30 конфет): парение, двойной прыжок и призрачный щит",
       "cover": "https://img.itch.zone/aW1nLzMxNDUzMDUyLnBuZw==/original/pJ2EMu.png",
@@ -57,7 +58,7 @@
       "playUrl": "https://muov.itch.io/glance-up-halloween-edition",
       "trailerUrl": "",
       "repoUrl": "",
-      "featured": false,
+      "featured": true,
       "tags": [],
       "itchId": "5245590",
       "itchUrl": "https://muov.itch.io/glance-up-halloween-edition"
@@ -87,7 +88,7 @@
       "playUrl": "https://muov.itch.io/hexagonia",
       "trailerUrl": "",
       "repoUrl": "",
-      "featured": true,
+      "featured": false,
       "tags": [
         "2D",
         "Godot",
@@ -99,7 +100,7 @@
       "itchUrl": "https://muov.itch.io/hexagonia"
     }
   ],
-  "updatedAt": "2026-10-27T21:08:40Z"
+  "updatedAt": "2026-10-27T22:00:15Z"
 }
 ;
 
@@ -172,12 +173,13 @@
       passMismatch: "Пароли не совпадают",
       passShort: "Минимум 6 символов",
       passUpdated: "Логин и пароль обновлены на этом устройстве",
+      name: "Имя",
       city: "Город / подпись",
       about: "О себе",
       links: "Ссылки (по одной на строку: Подпись | URL)",
       resetPublished: "Сбросить к published",
       resetConfirm: "Сбросить черновик?",
-      deleteConfirm: (t) => `Удалить «${t}»?`,
+      deleteConfirm: (title) => `Удалить «${title}»?`,
       draftSaved: "Черновик сохранён локально",
       draftHint: "Экспорт → GitHub, чтобы увидеть у всех",
       importOnly: "Импорт только для владельца после входа",
@@ -187,13 +189,14 @@
       shotsFail: "Не удалось обработать скриншоты",
       navLabel: "Действия",
       pageTitle: "Muov — портфолио игр",
-      comments: "Комментарии",
-      commentsHint: "Войди через GitHub, чтобы написать комментарий",
+      comments: "Комментарии к сайту",
+      commentsHint:
+        "Общий чат. Чтобы обсудить игру — открой её карточку, комментарии внизу окна.",
+      gameComments: "Комментарии к этой игре",
+      gameCommentsHint: "Войди через GitHub, чтобы написать комментарий",
       downloads: "скачиваний",
       views: "просмотров",
       rating: "оценка",
-      statsNone: "статистика itch появится после синка",
-
     },
     en: {
       roleDefault: "indie developer",
@@ -263,12 +266,13 @@
       passMismatch: "Passwords do not match",
       passShort: "At least 6 characters",
       passUpdated: "Username and password updated on this device",
+      name: "Name",
       city: "City / label",
       about: "About",
       links: "Links (one per line: Label | URL)",
       resetPublished: "Reset to published",
       resetConfirm: "Reset draft?",
-      deleteConfirm: (t) => `Delete “${t}”?`,
+      deleteConfirm: (title) => `Delete “${title}”?`,
       draftSaved: "Draft saved locally",
       draftHint: "Export → GitHub so everyone sees it",
       importOnly: "Import is only for the owner after login",
@@ -278,13 +282,14 @@
       shotsFail: "Could not process screenshots",
       navLabel: "Actions",
       pageTitle: "Muov — game portfolio",
-      comments: "Comments",
-      commentsHint: "Sign in with GitHub to leave a comment",
+      comments: "Site comments",
+      commentsHint:
+        "General discussion. To comment on a game — open its card; comments are at the bottom.",
+      gameComments: "Comments on this game",
+      gameCommentsHint: "Sign in with GitHub to leave a comment",
       downloads: "downloads",
       views: "views",
       rating: "rating",
-      statsNone: "itch stats appear after sync",
-
     },
   };
 
@@ -296,7 +301,16 @@
     return pack[key] ?? I18N.ru[key] ?? key;
   }
 
-  
+  function statusLabel(status) {
+    return (
+      { released: t("released"), wip: t("wip"), jam: t("jam"), prototype: t("prototype") }[
+        status
+      ] ||
+      status ||
+      "—"
+    );
+  }
+
   function formatStats(stats) {
     if (!stats || typeof stats !== "object") return "";
     const bits = [];
@@ -305,18 +319,8 @@
     if (typeof stats.views === "number")
       bits.push(`<span title="itch">👁 ${stats.views} ${t("views")}</span>`);
     if (typeof stats.rating === "number")
-      bits.push(`<span>★ ${stats.rating} ${t("rating")}</span>`);
+      bits.push(`<span>★ ${stats.rating}</span>`);
     return bits.join("");
-  }
-
-function statusLabel(status) {
-    const map = {
-      released: t("released"),
-      wip: t("wip"),
-      jam: t("jam"),
-      prototype: t("prototype"),
-    };
-    return map[status] || status || "—";
   }
 
   let published = structuredClone(SEED);
@@ -341,9 +345,7 @@ function statusLabel(status) {
   async function sha256(text) {
     const data = new TextEncoder().encode(text);
     const buf = await crypto.subtle.digest("SHA-256", data);
-    return [...new Uint8Array(buf)]
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
   function getCreds() {
@@ -351,7 +353,7 @@ function statusLabel(status) {
       const raw = localStorage.getItem(CREDS_KEY);
       if (raw) {
         const c = JSON.parse(raw);
-        if (c && c.username && c.passwordHash) return c;
+        if (c?.username && c?.passwordHash) return c;
       }
     } catch (_) {}
     return { username: DEFAULT_USER, passwordHash: DEFAULT_PASS_HASH };
@@ -379,13 +381,7 @@ function statusLabel(status) {
   }
 
   function isValidPortfolio(data) {
-    return (
-      data &&
-      typeof data === "object" &&
-      data.profile &&
-      typeof data.profile === "object" &&
-      Array.isArray(data.games)
-    );
+    return data && data.profile && Array.isArray(data.games);
   }
 
   function loadDraft() {
@@ -394,10 +390,7 @@ function statusLabel(status) {
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       if (!isValidPortfolio(parsed)) return null;
-      if (
-        parsed.games.length === 0 &&
-        published?.games?.length > 0
-      ) {
+      if (parsed.games.length === 0 && published?.games?.length) {
         localStorage.removeItem(STORAGE_KEY);
         return null;
       }
@@ -424,10 +417,8 @@ function statusLabel(status) {
 
   function safeUrl(u) {
     if (!u || typeof u !== "string") return "";
-    const s = u.trim();
-    if (!s) return "";
     try {
-      const url = new URL(s, location.href);
+      const url = new URL(u.trim(), location.href);
       if (url.protocol === "http:" || url.protocol === "https:") return url.href;
     } catch (_) {}
     return "";
@@ -445,7 +436,6 @@ function statusLabel(status) {
     dragDepth = 0;
     if (dropVeil) {
       dropVeil.hidden = true;
-      dropVeil.setAttribute("hidden", "");
       dropVeil.style.display = "none";
     }
   }
@@ -453,7 +443,6 @@ function statusLabel(status) {
   function showDropVeil() {
     if (!isAdmin || !dropVeil) return;
     dropVeil.hidden = false;
-    dropVeil.removeAttribute("hidden");
     dropVeil.style.display = "grid";
   }
 
@@ -486,41 +475,85 @@ function statusLabel(status) {
     return p.bio || "";
   }
 
+  function giscusBaseAttrs() {
+    const s = document.querySelector('script[src*="giscus.app/client.js"]');
+    return {
+      repo: s?.getAttribute("data-repo") || "Prodebug/portfolio",
+      repoId: s?.getAttribute("data-repo-id") || "R_kgDOVZsDQw",
+      category: s?.getAttribute("data-category") || "General",
+      categoryId: s?.getAttribute("data-category-id") || "DIC_kwDOVZsDQ84DJxqO",
+    };
+  }
+
+  function setGiscusLang(code) {
+    const gLang = code === "en" ? "en" : "ru";
+    document.querySelectorAll('script[src*="giscus.app/client.js"]').forEach((script) => {
+      script.setAttribute("data-lang", gLang);
+    });
+    document.querySelectorAll("iframe.giscus-frame").forEach((iframe) => {
+      try {
+        iframe.contentWindow.postMessage(
+          { giscus: { setConfig: { lang: gLang } } },
+          "https://giscus.app"
+        );
+      } catch (_) {}
+    });
+  }
+
+  function mountGameGiscus(container, gameId) {
+    if (!container) return;
+    container.innerHTML = "";
+    const wrap = document.createElement("div");
+    wrap.className = "giscus-game";
+    container.appendChild(wrap);
+    const cfg = giscusBaseAttrs();
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.setAttribute("data-repo", cfg.repo);
+    script.setAttribute("data-repo-id", cfg.repoId);
+    script.setAttribute("data-category", cfg.category);
+    script.setAttribute("data-category-id", cfg.categoryId);
+    script.setAttribute("data-mapping", "specific");
+    script.setAttribute("data-term", "game-" + gameId);
+    script.setAttribute("data-strict", "0");
+    script.setAttribute("data-reactions-enabled", "1");
+    script.setAttribute("data-emit-metadata", "0");
+    script.setAttribute("data-input-position", "top");
+    script.setAttribute("data-theme", "transparent_dark");
+    script.setAttribute("data-lang", lang === "en" ? "en" : "ru");
+    wrap.appendChild(script);
+  }
+
   function applyStaticI18n() {
     document.documentElement.lang = lang;
     document.title = t("pageTitle");
-
     const nav = document.querySelector(".nav");
     if (nav) nav.setAttribute("aria-label", t("navLabel"));
 
-    const map = [
-      ["btnProfile", "profile"],
-      ["btnExport", "export"],
-      ["btnAdd", "addGame"],
-      ["btnLogout", "logout"],
-      ["btnLogin", "login"],
-    ];
-    map.forEach(([id, key]) => {
+    const setTxt = (id, key) => {
       const el = $(id);
       if (el) el.textContent = t(key);
-    });
+    };
+    setTxt("btnProfile", "profile");
+    setTxt("btnExport", "export");
+    setTxt("btnAdd", "addGame");
+    setTxt("btnLogout", "logout");
+    setTxt("btnLogin", "login");
+
     const fileLabel = document.querySelector(".file-btn");
     if (fileLabel) {
       const input = fileLabel.querySelector("input");
-      fileLabel.childNodes.forEach((n) => {
-        if (n.nodeType === Node.TEXT_NODE) n.textContent = "";
+      [...fileLabel.childNodes].forEach((n) => {
+        if (n.nodeType === Node.TEXT_NODE) n.remove();
       });
-      // rebuild label text
-      const text = document.createTextNode(t("import") + " ");
-      fileLabel.insertBefore(text, input);
+      fileLabel.insertBefore(document.createTextNode(t("import") + " "), input);
     }
 
-    $("btnLogin") && ($("btnLogin").title = t("loginTitle"));
-    $("btnLogout") && ($("btnLogout").title = t("logout"));
-
+    if ($("btnLogin")) $("btnLogin").title = t("loginTitle");
     const section = document.querySelector(".section-title");
     if (section) section.textContent = t("shelf");
-
     document.querySelectorAll("#filters .chip").forEach((chip) => {
       const f = chip.getAttribute("data-filter");
       if (f === "all") chip.textContent = t("all");
@@ -528,18 +561,11 @@ function statusLabel(status) {
       if (f === "wip") chip.textContent = t("wip");
       if (f === "jam") chip.textContent = t("jam");
     });
-
-    const search = $("search");
-    if (search) search.placeholder = t("search");
-
+    if ($("search")) $("search").placeholder = t("search");
     if (empty) empty.textContent = t("empty");
-
-    const badge = $("adminBadge");
-    if (badge) badge.textContent = t("adminBadge");
-
+    if ($("adminBadge")) $("adminBadge").textContent = t("adminBadge");
     const dropP = dropVeil?.querySelector("p");
     if (dropP) dropP.textContent = t("drop");
-
     const foot = document.querySelector(".foot p");
     if (foot) {
       foot.innerHTML =
@@ -547,20 +573,12 @@ function statusLabel(status) {
         ' <a href="https://muov.itch.io/" target="_blank" rel="noopener">muov.itch.io</a> · ' +
         t("footSync");
     }
-
     document.querySelectorAll(".lang-btn").forEach((b) => {
       b.classList.toggle("active", b.dataset.lang === lang);
     });
-    const cTitle = document.getElementById("commentsTitle");
-    if (cTitle) cTitle.textContent = t("comments");
-    const cHint = document.getElementById("commentsHint");
-    if (cHint) cHint.textContent = t("commentsHint");
-    // reload giscus lang
-    const gframe = document.querySelector("iframe.giscus-frame");
-    if (gframe && window.location) {
-      // giscus listens to messages; set data-lang on script parent via reload optional
-    }
-
+    if ($("commentsTitle")) $("commentsTitle").textContent = t("comments");
+    if ($("commentsHint")) $("commentsHint").textContent = t("commentsHint");
+    setGiscusLang(lang);
   }
 
   function setLang(next) {
@@ -608,29 +626,20 @@ function statusLabel(status) {
     const list = visibleGames();
     grid.innerHTML = "";
     empty.hidden = list.length > 0;
-
     for (const g of list) {
       const art = document.createElement("article");
       art.className = "case" + (g.featured ? " is-featured" : "");
       art.setAttribute("role", "listitem");
-
       const stamp = statusLabel(g.status);
       const cover = g.cover
-        ? `<img src="${esc(g.cover)}" alt="" loading="lazy" onerror="this.style.display='none'" />
-           <div class="poster-fallback is-hidden">${esc((g.title || "?").slice(0, 1))}</div>`
+        ? `<img src="${esc(g.cover)}" alt="" loading="lazy" onerror="this.style.display='none'" />`
         : `<div class="poster-fallback">${esc((g.title || "?").slice(0, 1))}</div>`;
-
       const metaBits = [];
       if (g.year) metaBits.push(`<span>${esc(g.year)}</span>`);
-      (g.genres || []).slice(0, 2).forEach((x) =>
-        metaBits.push(`<span>${esc(x)}</span>`)
-      );
-      (g.platforms || []).slice(0, 2).forEach((x) =>
-        metaBits.push(`<span>${esc(x)}</span>`)
-      );
+      (g.genres || []).slice(0, 2).forEach((x) => metaBits.push(`<span>${esc(x)}</span>`));
+      (g.platforms || []).slice(0, 2).forEach((x) => metaBits.push(`<span>${esc(x)}</span>`));
       const statsHtml = formatStats(g.stats);
       if (statsHtml) metaBits.push(statsHtml);
-
       art.innerHTML = `
         <button type="button" class="case-btn" data-open="${esc(g.id)}" aria-label="${esc(g.title)}">
           <div class="poster">
@@ -642,8 +651,7 @@ function statusLabel(status) {
             ${g.tagline ? `<p class="case-tagline">${esc(g.tagline)}</p>` : ""}
             <div class="meta">${metaBits.join("")}</div>
           </div>
-        </button>
-      `;
+        </button>`;
       grid.appendChild(art);
     }
   }
@@ -699,18 +707,14 @@ function statusLabel(status) {
         </div>
         <p class="hint">${isCustom ? t("customHint") : t("defaultHint")}</p>
         <p class="hint">${esc(t("guestHint"))}</p>
-        <button type="button" class="btn ghost" id="btnRegister" style="width:100%;margin-top:0.5rem">
-          ${esc(t("changePass"))}
-        </button>
-      </form>
-    `;
+        <button type="button" class="btn ghost" id="btnRegister" style="width:100%;margin-top:0.5rem">${esc(t("changePass"))}</button>
+      </form>`;
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     dialogBody.querySelector("#authForm").onsubmit = async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
       const user = String(fd.get("username") || "").trim();
-      const pass = String(fd.get("password") || "");
-      const hash = await sha256(pass);
+      const hash = await sha256(String(fd.get("password") || ""));
       const c = getCreds();
       const err = dialogBody.querySelector("#authError");
       if (user === c.username && hash === c.passwordHash) {
@@ -730,26 +734,17 @@ function statusLabel(status) {
         <button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>
       </div>
       <form id="regForm" class="form-grid auth-box">
-        <label class="field">${esc(t("currentPass"))}
-          <input name="current" type="password" required autocomplete="current-password" />
-        </label>
-        <label class="field">${esc(t("newUser"))}
-          <input name="username" required autocomplete="username" value="${esc(getCreds().username)}" />
-        </label>
-        <label class="field">${esc(t("newPass"))}
-          <input name="password" type="password" required minlength="6" autocomplete="new-password" />
-        </label>
-        <label class="field">${esc(t("newPass2"))}
-          <input name="password2" type="password" required minlength="6" autocomplete="new-password" />
-        </label>
+        <label class="field">${esc(t("currentPass"))}<input name="current" type="password" required /></label>
+        <label class="field">${esc(t("newUser"))}<input name="username" required value="${esc(getCreds().username)}" /></label>
+        <label class="field">${esc(t("newPass"))}<input name="password" type="password" required minlength="6" /></label>
+        <label class="field">${esc(t("newPass2"))}<input name="password2" type="password" required minlength="6" /></label>
         <p class="auth-error" id="authError"></p>
         <div class="form-footer">
           <button type="button" class="btn ghost" data-act="back">${esc(t("back"))}</button>
           <button type="submit" class="btn primary">${esc(t("save"))}</button>
         </div>
         <p class="hint">${esc(t("passHint"))}</p>
-      </form>
-    `;
+      </form>`;
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     dialogBody.querySelector('[data-act="back"]').onclick = () => renderAuth();
     dialogBody.querySelector("#regForm").onsubmit = async (e) => {
@@ -761,8 +756,7 @@ function statusLabel(status) {
         return;
       }
       const p1 = String(fd.get("password") || "");
-      const p2 = String(fd.get("password2") || "");
-      if (p1 !== p2) {
+      if (p1 !== String(fd.get("password2") || "")) {
         err.textContent = t("passMismatch");
         return;
       }
@@ -820,20 +814,28 @@ function statusLabel(status) {
           ${(g.shots || []).length ? `<div class="shots">${(g.shots || []).map((s) => `<img src="${esc(s)}" alt="" loading="lazy" />`).join("")}</div>` : ""}
         </div>
       </div>
-    `;
+      <div class="game-comments">
+        <h3 class="game-comments-title">${esc(t("gameComments"))}</h3>
+        <p class="comments-hint">${esc(t("gameCommentsHint"))}</p>
+        <div id="gameGiscusHost"></div>
+      </div>`;
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     const editBtn = dialogBody.querySelector('[data-act="edit"]');
     if (editBtn) editBtn.onclick = () => openPanel({ mode: "edit", gameId: id });
     const delBtn = dialogBody.querySelector('[data-act="delete"]');
     if (delBtn)
       delBtn.onclick = () => {
-        const msg = typeof t("deleteConfirm") === "function" ? t("deleteConfirm")(g.title) : `Delete ${g.title}?`;
+        const msg =
+          typeof t("deleteConfirm") === "function"
+            ? t("deleteConfirm")(g.title)
+            : `Delete ${g.title}?`;
         if (!confirm(msg)) return;
         state.games = state.games.filter((x) => x.id !== id);
         saveDraft();
         closePanel();
         renderGrid();
       };
+    mountGameGiscus(dialogBody.querySelector("#gameGiscusHost"), id);
   }
 
   function blankGame() {
@@ -859,10 +861,7 @@ function statusLabel(status) {
 
   function fileToDataUrl(file, maxW = 1280, quality = 0.8) {
     return new Promise((resolve, reject) => {
-      if (!file || !file.type.startsWith("image/")) {
-        reject(new Error("image"));
-        return;
-      }
+      if (!file?.type.startsWith("image/")) return reject(new Error("image"));
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
@@ -899,33 +898,51 @@ function statusLabel(status) {
         <label class="field">${esc(t("title"))}<input name="title" required value="${esc(g.title)}" /></label>
         <label class="field">${esc(t("tagline"))}<input name="tagline" value="${esc(g.tagline)}" /></label>
         <div class="form-grid two">
-          <label class="field">${esc(t("year"))}<input name="year" type="number" min="1990" max="2100" value="${esc(g.year || "")}" /></label>
+          <label class="field">${esc(t("year"))}<input name="year" type="number" value="${esc(g.year || "")}" /></label>
           <label class="field">${esc(t("role"))}<input name="role" value="${esc(g.role || "")}" /></label>
         </div>
         <div class="form-grid two">
           <label class="field">${esc(t("status"))}
-            <select name="status">
-              ${statuses.map((k) => `<option value="${k}" ${g.status === k ? "selected" : ""}>${esc(statusLabel(k))}</option>`).join("")}
-            </select>
+            <select name="status">${statuses
+              .map(
+                (k) =>
+                  `<option value="${k}" ${g.status === k ? "selected" : ""}>${esc(
+                    statusLabel(k)
+                  )}</option>`
+              )
+              .join("")}</select>
           </label>
-          <label class="field">${esc(t("genres"))}<input name="genres" value="${esc((g.genres || []).join(", "))}" /></label>
+          <label class="field">${esc(t("genres"))}<input name="genres" value="${esc(
+      (g.genres || []).join(", ")
+    )}" /></label>
         </div>
-        <label class="field">${esc(t("platforms"))}<input name="platforms" value="${esc((g.platforms || []).join(", "))}" /></label>
-        <label class="field">${esc(t("description"))}<textarea name="description">${esc(g.description || "")}</textarea></label>
-        <label class="field">${esc(t("playUrl"))}<input name="playUrl" type="url" value="${esc(g.playUrl || "")}" /></label>
+        <label class="field">${esc(t("platforms"))}<input name="platforms" value="${esc(
+      (g.platforms || []).join(", ")
+    )}" /></label>
+        <label class="field">${esc(t("description"))}<textarea name="description">${esc(
+      g.description || ""
+    )}</textarea></label>
+        <label class="field">${esc(t("playUrl"))}<input name="playUrl" type="url" value="${esc(
+      g.playUrl || ""
+    )}" /></label>
         <div class="form-grid two">
-          <label class="field">${esc(t("trailerUrl"))}<input name="trailerUrl" type="url" value="${esc(g.trailerUrl || "")}" /></label>
-          <label class="field">${esc(t("repoUrl"))}<input name="repoUrl" type="url" value="${esc(g.repoUrl || "")}" /></label>
+          <label class="field">${esc(t("trailerUrl"))}<input name="trailerUrl" type="url" value="${esc(
+      g.trailerUrl || ""
+    )}" /></label>
+          <label class="field">${esc(t("repoUrl"))}<input name="repoUrl" type="url" value="${esc(
+      g.repoUrl || ""
+    )}" /></label>
         </div>
         <label class="field">${esc(t("cover"))}<input name="coverFile" type="file" accept="image/*" /></label>
         <label class="field">${esc(t("shots"))}<input name="shotsFile" type="file" accept="image/*" multiple /></label>
-        <label class="check-row"><input type="checkbox" name="featured" ${g.featured ? "checked" : ""} /> ${esc(t("featured"))}</label>
+        <label class="check-row"><input type="checkbox" name="featured" ${
+          g.featured ? "checked" : ""
+        } /> ${esc(t("featured"))}</label>
         <div class="form-footer">
           <button type="button" class="btn ghost" data-act="close">${esc(t("cancel"))}</button>
           <button type="submit" class="btn primary">${esc(t("save"))}</button>
         </div>
-      </form>
-    `;
+      </form>`;
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     const form = dialogBody.querySelector("#gameForm");
     form.onsubmit = async (e) => {
@@ -938,8 +955,14 @@ function statusLabel(status) {
         year: Number(fd.get("year")) || null,
         role: String(fd.get("role") || "").trim(),
         status: String(fd.get("status") || "wip"),
-        genres: String(fd.get("genres") || "").split(",").map((s) => s.trim()).filter(Boolean),
-        platforms: String(fd.get("platforms") || "").split(",").map((s) => s.trim()).filter(Boolean),
+        genres: String(fd.get("genres") || "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        platforms: String(fd.get("platforms") || "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
         description: String(fd.get("description") || "").trim(),
         playUrl: String(fd.get("playUrl") || "").trim(),
         trailerUrl: String(fd.get("trailerUrl") || "").trim(),
@@ -947,7 +970,8 @@ function statusLabel(status) {
         featured: form.featured.checked,
       };
       try {
-        if (form.coverFile.files[0]) next.cover = await fileToDataUrl(form.coverFile.files[0], 1280, 0.82);
+        if (form.coverFile.files[0])
+          next.cover = await fileToDataUrl(form.coverFile.files[0], 1280, 0.82);
       } catch (_) {
         alert(t("coverFail"));
         return;
@@ -961,7 +985,10 @@ function statusLabel(status) {
           return;
         }
       }
-      if (next.featured) state.games.forEach((x) => { if (x.id !== next.id) x.featured = false; });
+      if (next.featured)
+        state.games.forEach((x) => {
+          if (x.id !== next.id) x.featured = false;
+        });
       if (isNew) state.games.unshift(next);
       else {
         const i = state.games.findIndex((x) => x.id === next.id);
@@ -982,35 +1009,32 @@ function statusLabel(status) {
       </div>
       <form id="profileForm" class="form-grid">
         <div class="form-grid two">
-          <label class="field">${esc(t("username") === "Username" ? "Name" : "Имя")}
-            <input name="name" required value="${esc(p.name || "")}" />
-          </label>
-          <label class="field">${esc(t("role"))}
-            <input name="role" value="${esc(p.role || "")}" placeholder="RU" />
-          </label>
+          <label class="field">${esc(t("name"))}<input name="name" required value="${esc(
+      p.name || ""
+    )}" /></label>
+          <label class="field">${esc(t("role"))} (RU)<input name="role" value="${esc(
+      p.role || ""
+    )}" /></label>
         </div>
-        <label class="field">${esc(t("role"))} (EN)
-          <input name="roleEn" value="${esc(p.roleEn || "")}" placeholder="indie developer" />
-        </label>
-        <label class="field">${esc(t("city"))}
-          <input name="city" value="${esc(p.city || "")}" />
-        </label>
-        <label class="field">${esc(t("about"))} (RU)
-          <textarea name="bio">${esc(p.bio || "")}</textarea>
-        </label>
-        <label class="field">${esc(t("about"))} (EN)
-          <textarea name="bioEn">${esc(p.bioEn || "")}</textarea>
-        </label>
-        <label class="field">${esc(t("links"))}
-          <textarea name="links">${esc((p.links || []).map((l) => `${l.label} | ${l.url}`).join("\n"))}</textarea>
-        </label>
+        <label class="field">${esc(t("role"))} (EN)<input name="roleEn" value="${esc(
+      p.roleEn || ""
+    )}" /></label>
+        <label class="field">${esc(t("city"))}<input name="city" value="${esc(p.city || "")}" /></label>
+        <label class="field">${esc(t("about"))} (RU)<textarea name="bio">${esc(
+      p.bio || ""
+    )}</textarea></label>
+        <label class="field">${esc(t("about"))} (EN)<textarea name="bioEn">${esc(
+      p.bioEn || ""
+    )}</textarea></label>
+        <label class="field">${esc(t("links"))}<textarea name="links">${esc(
+      (p.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")
+    )}</textarea></label>
         <div class="form-footer">
           <button type="button" class="btn ghost" data-act="reset">${esc(t("resetPublished"))}</button>
           <button type="button" class="btn ghost" data-act="close">${esc(t("cancel"))}</button>
           <button type="submit" class="btn primary">${esc(t("save"))}</button>
         </div>
-      </form>
-    `;
+      </form>`;
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     dialogBody.querySelector('[data-act="reset"]').onclick = () => {
       if (!confirm(t("resetConfirm"))) return;
