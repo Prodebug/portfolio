@@ -927,3 +927,33 @@ label.field textarea {
   width: 100%;
   min-height: 120px;
 }
+
+/* game detail comments */
+.game-comments {
+  margin-top: 1.75rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--line);
+}
+.game-comments-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.giscus-game {
+  margin-top: 0.75rem;
+  min-height: 80px;
+}
+
+/* wider sheet for comments comfort */
+.sheet {
+  width: min(980px, calc(100vw - 1.25rem));
+}
+
+/* make primary play button more obvious in cards */
+.case-body .meta {
+  gap: 0.35rem;
+}
