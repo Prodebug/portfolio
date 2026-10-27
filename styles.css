@@ -663,3 +663,17 @@ label.field textarea { min-height: 5.5rem; resize: vertical; }
 .case-body .stats-row {
   margin-top: 0.55rem;
 }
+
+/* public stats always readable */
+.case-body .stats-row {
+  margin-top: 0.7rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--line);
+}
+.case-body .stat-pill {
+  background: rgba(124, 108, 255, 0.12);
+  font-size: 0.78rem;
+}
+.case-body .stat-pill b {
+  font-size: 0.85rem;
+}
