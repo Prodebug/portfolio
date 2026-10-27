@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Muov — портфолио игр</title>
-  <meta name="description" content="Инди-разработчик Muov. Платформеры, миры и истории. Hexagonia и другие проекты." />
-  <meta name="theme-color" content="#0e0c0a" />
+  <meta name="description" content="Indie developer Muov. Platformers, worlds and stories." />
+  <meta name="theme-color" content="#07080d" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -24,7 +24,11 @@
         </span>
       </a>
 
-      <nav class="nav" aria-label="Действия">
+      <nav class="nav" aria-label="Actions">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="ru" title="Русский">RU</button>
+          <button type="button" class="lang-btn" data-lang="en" title="English">EN</button>
+        </div>
         <div id="adminNav" class="admin-nav" hidden>
           <button type="button" class="btn ghost" id="btnProfile">Профиль</button>
           <button type="button" class="btn ghost" id="btnExport">Экспорт</button>
@@ -35,7 +39,7 @@
           <button type="button" class="btn primary" id="btnAdd">+ Игра</button>
           <button type="button" class="btn ghost" id="btnLogout" title="Выйти">Выйти</button>
         </div>
-        <button type="button" class="btn ghost" id="btnLogin" title="Вход для владельца">Вход</button>
+        <button type="button" class="btn ghost" id="btnLogin" title="Вход">Вход</button>
       </nav>
     </div>
   </header>
@@ -45,12 +49,10 @@
       <div class="hero-inner">
         <p class="eyebrow" id="heroCity">itch.io · Discord</p>
         <h1 class="display" id="heroTitle">Muov</h1>
-        <p class="lede" id="heroBio">
-          Создаю инди-игры, выстраиваю вымышленные миры и пишу истории.
-        </p>
+        <p class="lede" id="heroBio"></p>
         <div class="hero-links" id="heroLinks"></div>
         <div class="sync" id="syncStatus" hidden></div>
-        <p class="admin-badge" id="adminBadge" hidden>Режим админа — правки локально; чтобы обновить сайт для всех — Экспорт → commit в GitHub</p>
+        <p class="admin-badge" id="adminBadge" hidden></p>
       </div>
     </section>
 
@@ -63,13 +65,44 @@
           <button type="button" class="chip" data-filter="wip">В работе</button>
           <button type="button" class="chip" data-filter="jam">Джем</button>
         </div>
-        <input type="search" class="search" id="search" placeholder="Поиск по названию…" autocomplete="off" />
+        <input type="search" class="search" id="search" placeholder="Поиск…" autocomplete="off" />
       </div>
 
       <div class="grid" id="grid" role="list"></div>
       <p class="empty" id="empty" hidden>Игр пока нет.</p>
     </section>
   </main>
+
+
+    <section class="comments-wrap" id="comments">
+      <div class="comments-inner">
+        <h2 class="section-title" id="commentsTitle">Комментарии</h2>
+        <p class="comments-hint" id="commentsHint">Войди через GitHub, чтобы написать комментарий</p>
+        <div class="giscus"></div>
+        <!--
+          Giscus: один раз настрой на https://giscus.app
+          1) Discussions включены в репо Prodebug/portfolio
+          2) Установлено приложение giscus
+          3) Скопируй data-repo-id и data-category-id ниже
+        -->
+        <script src="https://giscus.app/client.js"
+          data-repo="Prodebug/portfolio"
+          data-repo-id="REPLACE_REPO_ID"
+          data-category="General"
+          data-category-id="REPLACE_CATEGORY_ID"
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="top"
+          data-theme="transparent_dark"
+          data-lang="ru"
+          data-loading="lazy"
+          crossorigin="anonymous"
+          async>
+        </script>
+      </div>
+    </section>
 
   <footer class="foot">
     <p>
