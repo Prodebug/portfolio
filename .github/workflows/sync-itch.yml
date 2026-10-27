@@ -1,0 +1,39 @@
+name: Sync itch.io games
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+  push:
+    paths:
+      - "scripts/sync_itch.py"
+      - ".github/workflows/sync-itch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sync from muov.itch.io
+        run: python scripts/sync_itch.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/portfolio.json
+          if git diff --staged --quiet; then
+            echo "No changes"
+          else
+            git commit -m "chore: sync games from itch.io"
+            git push
+          fi
