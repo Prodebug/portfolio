@@ -53,9 +53,9 @@
       "itchId": "5245590",
       "itchUrl": "https://muov.itch.io/glance-up-halloween-edition",
       "stats": {
-        "downloads": null,
-        "views": null,
-        "plays": null
+        "downloads": 0,
+        "views": 0,
+        "plays": 0
       }
     },
     {
@@ -94,11 +94,11 @@
       "itchId": "4820915",
       "itchUrl": "https://muov.itch.io/hexagonia",
       "stats": {
-        "downloads": null,
-        "views": null,
-        "plays": null
+        "downloads": 0,
+        "views": 0,
+        "plays": 0
       }
     }
   ],
-  "updatedAt": "2026-10-27T22:39:17Z"
+  "updatedAt": "2026-10-27T22:46:44Z"
 }
