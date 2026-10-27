@@ -338,6 +338,7 @@
     push("downloads", "↓", t("downloads"));
     push("views", "👁", t("views"));
     push("plays", "▶", t("plays"));
+    push("siteViews", "🌐", t("siteViews"));
     if (typeof stats.rating === "number") {
       items.push(
         `<span class="stat-pill" title="${esc(t("rating"))}"><i>★</i><b>${esc(
@@ -349,9 +350,29 @@
     return `<div class="stats-row">${items.join("")}</div>`;
   }
 
+  function counterKey(gameId) {
+    return String(gameId || "unknown").replace(/[^a-z0-9_-]/gi, "-").slice(0, 48);
+  }
+
+  async function counterGet(gameId) {
+    try {
+      const key = counterKey(gameId);
+      const res = await fetch(
+        `https://api.counterapi.dev/v1/muov-portfolio/${encodeURIComponent(key)}`,
+        { cache: "no-store" }
+      );
+      if (!res.ok) return null;
+      const data = await res.json();
+      const value = data?.value ?? data?.count;
+      return typeof value === "number" ? value : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   async function bumpSiteView(gameId) {
     try {
-      const key = String(gameId || "unknown").replace(/[^a-z0-9_-]/gi, "-").slice(0, 48);
+      const key = counterKey(gameId);
       const res = await fetch(
         `https://api.counterapi.dev/v1/muov-portfolio/${encodeURIComponent(key)}/up`,
         { cache: "no-store" }
@@ -363,6 +384,20 @@
     } catch (_) {
       return null;
     }
+  }
+
+  /** Load public site-open counts onto every game card (visible to all visitors). */
+  async function hydratePublicSiteViews() {
+    const games = state?.games || [];
+    await Promise.all(
+      games.map(async (g) => {
+        const n = await counterGet(g.id);
+        if (n == null) return;
+        g.stats = g.stats || {};
+        g.stats.siteViews = n;
+      })
+    );
+    renderGrid();
   }
 
 
@@ -887,15 +922,11 @@
       const game = getGame(id);
       if (!game) return;
       game.stats = game.stats || {};
-      // site open counter shown alongside manual/itch views
       game.stats.siteViews = n;
       const bar = dialogBody.querySelector("#gameStatsBar");
-      if (bar) {
-        const site = `<span class="stat-pill site"><i>🌐</i><b>${esc(
-          formatNum(n)
-        )}</b> <em>${esc(t("siteViews"))}</em></span>`;
-        bar.innerHTML = (formatStats(game.stats, false) || "") + site;
-      }
+      if (bar) bar.innerHTML = formatStats(game.stats, false) || "";
+      // refresh shelf so everyone-facing numbers stay in sync on this tab
+      renderGrid();
     });
   }
 
@@ -1293,6 +1324,8 @@
     isAdmin = loadSession();
     state = isAdmin ? loadDraft() || structuredClone(published) : structuredClone(published);
     renderAll();
+    // public counters — everyone sees them on cards
+    hydratePublicSiteViews();
   }
 
   boot();
