@@ -323,30 +323,30 @@
   }
 
   function formatStats(stats, compact) {
-    if (!stats || typeof stats !== "object") return "";
+    const s = stats && typeof stats === "object" ? stats : {};
     const items = [];
     const push = (key, icon, label) => {
-      const n = stats[key];
-      if (typeof n === "number" && isFinite(n) && n >= 0) {
-        items.push(
-          `<span class="stat-pill" title="${esc(label)}"><i>${icon}</i><b>${esc(
-            formatNum(n)
-          )}</b>${compact ? "" : ` <em>${esc(label)}</em>`}</span>`
-        );
-      }
+      let n = s[key];
+      if (n == null || n === "" || !isFinite(Number(n))) n = 0;
+      else n = Number(n);
+      if (n < 0) n = 0;
+      items.push(
+        `<span class="stat-pill" title="${esc(label)}"><i>${icon}</i><b>${esc(
+          formatNum(n)
+        )}</b>${compact ? "" : ` <em>${esc(label)}</em>`}</span>`
+      );
     };
     push("downloads", "↓", t("downloads"));
     push("views", "👁", t("views"));
     push("plays", "▶", t("plays"));
     push("siteViews", "🌐", t("siteViews"));
-    if (typeof stats.rating === "number") {
+    if (typeof s.rating === "number" && isFinite(s.rating)) {
       items.push(
         `<span class="stat-pill" title="${esc(t("rating"))}"><i>★</i><b>${esc(
-          String(stats.rating)
+          String(s.rating)
         )}</b></span>`
       );
     }
-    if (!items.length) return "";
     return `<div class="stats-row">${items.join("")}</div>`;
   }
 
@@ -358,15 +358,16 @@
     try {
       const key = counterKey(gameId);
       const res = await fetch(
-        `https://api.counterapi.dev/v1/muov-portfolio/${encodeURIComponent(key)}`,
+        `https://abacus.jasoncameron.dev/get/muov-portfolio/${encodeURIComponent(key)}`,
         { cache: "no-store" }
       );
-      if (!res.ok) return null;
+      if (!res.ok) return 0;
       const data = await res.json();
-      const value = data?.value ?? data?.count;
-      return typeof value === "number" ? value : null;
+      if (data && data.error) return 0;
+      const value = data?.value;
+      return typeof value === "number" ? value : 0;
     } catch (_) {
-      return null;
+      return 0;
     }
   }
 
@@ -374,31 +375,30 @@
     try {
       const key = counterKey(gameId);
       const res = await fetch(
-        `https://api.counterapi.dev/v1/muov-portfolio/${encodeURIComponent(key)}/up`,
+        `https://abacus.jasoncameron.dev/hit/muov-portfolio/${encodeURIComponent(key)}`,
         { cache: "no-store" }
       );
       if (!res.ok) return null;
       const data = await res.json();
-      const value = data?.value ?? data?.count;
+      const value = data?.value;
       return typeof value === "number" ? value : null;
     } catch (_) {
       return null;
     }
   }
 
-  /** Load public site-open counts onto every game card (visible to all visitors). */
   async function hydratePublicSiteViews() {
     const games = state?.games || [];
     await Promise.all(
       games.map(async (g) => {
         const n = await counterGet(g.id);
-        if (n == null) return;
         g.stats = g.stats || {};
-        g.stats.siteViews = n;
+        g.stats.siteViews = typeof n === "number" ? n : 0;
       })
     );
     renderGrid();
   }
+
 
 
   let published = structuredClone(SEED);
