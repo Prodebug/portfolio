@@ -5,7 +5,7 @@
     "roleEn": "indie developer",
     "city": "itch.io",
     "bio": "Создаю игры",
-    "bioEn": "I create game",
+    "bioEn": "I create games",
     "links": [
       {
         "label": "itch.io",
@@ -18,10 +18,50 @@
       {
         "label": "Hexagonia",
         "url": "https://muov.itch.io/hexagonia"
+      },
+      {
+        "label": "Depth",
+        "url": "https://muov.itch.io/depth"
       }
     ]
   },
   "games": [
+    {
+      "id": "depth",
+      "title": "Depth",
+      "tagline": "Dive deeper. Light is life.",
+      "year": 2026,
+      "role": "разработка",
+      "status": "released",
+      "genres": [
+        "Action",
+        "Arcade"
+      ],
+      "platforms": [
+        "Web"
+      ],
+      "description": "Depth is an arcade game about diving to the bottom of the ocean, where light means life.\n\nYou pilot a bathyscaphe. The deeper you go, the darker it gets — and your lamp slowly dies. Collect glowing plankton, catch fish for points, dodge predators and electric jellyfish.\n\nWhat's inside:\n• Three depth zones: Twilight, Midnight, The Abyss\n• Bosses at the end of each zone\n• One-hit shield\n• Workshop upgrades (lamp, hull, magnet)\n• Achievements & daily challenge\n• High scores saved in the browser\n\nControls: mouse / touch, or arrows & WASD. Pause: Esc / P.\n\nRuns in the browser on PC and mobile — no install needed.",
+      "cover": "",
+      "shots": [],
+      "playUrl": "https://muov.itch.io/depth",
+      "trailerUrl": "",
+      "repoUrl": "",
+      "featured": true,
+      "tags": [
+        "HTML5",
+        "Atmospheric",
+        "Arcade",
+        "Singleplayer",
+        "No AI"
+      ],
+      "itchId": "",
+      "itchUrl": "https://muov.itch.io/depth",
+      "stats": {
+        "downloads": null,
+        "views": null,
+        "plays": null
+      }
+    },
     {
       "id": "glance-up-halloween-edition",
       "title": "Glance Up: Halloween Edition",
@@ -37,7 +77,7 @@
         "Android",
         "Web"
       ],
-      "description": "🎃 ХЭЛЛОУИНСКИЙ ИВЕНТ УЖЕ В ИГРЕ! 🎃\n\nGlance Up &mdash; пиксельный платформер-бесконечный прыгун. Прыгай по платформам всё выше, уворачивайся от деревьев-монстров и собирай монеты.\n\nВ Хэллоуинском режиме:\n\n• Фиолетовое небо и красная луна\n\n• Конфеты, которые падают на платформах\n\n• Новый персонаж &mdash; Тыквенный Дух (30 конфет): парение, двойной прыжок и призрачный щит",
+      "description": "🎃 ХЭЛЛОУИНСКИЙ ИВЕНТ УЖЕ В ИГРЕ! 🎃\n\nGlance Up — пиксельный платформер-бесконечный прыгун. Прыгай по платформам всё выше, уворачивайся от деревьев-монстров и собирай монеты.\n\nВ Хэллоуинском режиме:\n\n• Фиолетовое небо и красная луна\n\n• Конфеты, которые падают на платформах\n\n• Новый персонаж — Тыквенный Дух (30 конфет): парение, двойной прыжок и призрачный щит",
       "cover": "https://img.itch.zone/aW1nLzMxNDUzMDUyLnBuZw==/original/pJ2EMu.png",
       "shots": [
         "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTUzMjY0Ny5wbmc=/original/cbzGu%2B.png",
@@ -100,5 +140,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-01T12:53:34Z"
+  "updatedAt": "2026-11-01T15:50:00Z"
 }
