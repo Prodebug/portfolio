@@ -26,17 +26,31 @@
     ]
   },
   "games": [
-    {
-      "id": "depth",
-      "title": "Depth",
-      "tagline": "Dive deeper. Light is life.",
-      "year": 2026,
-      "role": "разработка",
-      "status": "released",
-      "genres": [
-        "Action",
-        "Arcade"
-      ],
+ {
+  "id": "depth",
+  "title": "Depth",
+  "tagline": "Dive deeper. Light is life.",
+  "year": 2026,
+  "role": "разработка",
+  "status": "released",
+  "genres": ["Action", "Arcade"],
+  "platforms": ["Web"],
+  "description": "Depth is an arcade game about diving to the bottom of the ocean, where light means life.\n\nYou pilot a bathyscaphe. The deeper you go, the darker it gets — and your lamp slowly dies. Collect glowing plankton, catch fish for points, dodge predators and electric jellyfish.\n\nWhat's inside:\n• Three depth zones: Twilight, Midnight, The Abyss\n• Bosses at the end of each zone\n• One-hit shield\n• Workshop upgrades (lamp, hull, magnet)\n• Achievements & daily challenge\n• High scores saved in the browser\n\nControls: mouse / touch, or arrows & WASD. Pause: Esc / P.\n\nRuns in the browser on PC and mobile — no install needed.",
+  "cover": "https://img.itch.zone/aW1nLzMxNjc4NTQ1LnBuZw==/original/KThFRj.png",
+  "shots": [],
+  "playUrl": "https://muov.itch.io/depth",
+  "trailerUrl": "",
+  "repoUrl": "",
+  "featured": true,
+  "tags": ["HTML5", "Atmospheric", "Arcade", "Singleplayer", "No AI"],
+  "itchId": "5279406",
+  "itchUrl": "https://muov.itch.io/depth",
+  "stats": {
+    "downloads": null,
+    "views": null,
+    "plays": null
+  }
+},
       "platforms": [
         "Web"
       ],
