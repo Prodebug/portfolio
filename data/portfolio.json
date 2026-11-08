@@ -51,7 +51,9 @@
       "tags": [],
       "itchId": "5281935",
       "itchUrl": "https://muov.itch.io/exeforge",
-      "stats": {}
+      "stats": {
+        "rating": 5.0
+      }
     },
     {
       "id": "depth",
@@ -88,7 +90,8 @@
       "stats": {
         "downloads": null,
         "views": null,
-        "plays": null
+        "plays": null,
+        "rating": 5.0
       }
     },
     {
@@ -124,7 +127,8 @@
       "stats": {
         "downloads": null,
         "views": null,
-        "plays": null
+        "plays": null,
+        "rating": 5.0
       }
     },
     {
@@ -165,9 +169,10 @@
       "stats": {
         "downloads": 10,
         "views": 34,
-        "plays": 10
+        "plays": 10,
+        "rating": 5.0
       }
     }
   ],
-  "updatedAt": "2026-11-07T12:40:22Z"
+  "updatedAt": "2026-11-08T12:57:30Z"
 }
