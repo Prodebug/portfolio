@@ -27,6 +27,33 @@
   },
   "games": [
     {
+      "id": "core-jacker",
+      "title": "Core Jacker",
+      "tagline": "",
+      "year": 2026,
+      "role": "разработка",
+      "status": "jam",
+      "genres": [],
+      "platforms": [
+        "Windows",
+        "Linux",
+        "Web"
+      ],
+      "description": "You are not a pilot. You are a living, unstable energy core &mdash; and without a body, you won&#x27;t survive for long.\n\nIn a world overrun by hostile machines, your only chance of survival is to take control of other robots. Launch an energy cable, capture a machine, and turn it into your weapon. But every body has a limit: your energy slowly overloads its systems, forcing you to abandon it and find another before time runs out.\n\nOne core. Countless machines. No second chances.\n\nClick and Enjoy",
+      "cover": "https://img.itch.zone/aW1nLzMyMDIzMDc3LmpwZw==/original/qNR61a.jpg",
+      "shots": [],
+      "playUrl": "https://muov.itch.io/core-jacker",
+      "trailerUrl": "",
+      "repoUrl": "",
+      "featured": false,
+      "tags": [],
+      "itchId": "5327887",
+      "itchUrl": "https://muov.itch.io/core-jacker",
+      "stats": {
+        "rating": 5.0
+      }
+    },
+    {
       "id": "exeforge",
       "title": "ExeForge",
       "tagline": "",
@@ -110,12 +137,11 @@
         "Web"
       ],
       "description": "🎃 ХЭЛЛОУИНСКИЙ ИВЕНТ УЖЕ В ИГРЕ! 🎃\n\nGlance Up — пиксельный платформер-бесконечный прыгун. Прыгай по платформам всё выше, уворачивайся от деревьев-монстров и собирай монеты.\n\nВ Хэллоуинском режиме:\n\n• Фиолетовое небо и красная луна\n\n• Конфеты, которые падают на платформах\n\n• Новый персонаж — Тыквенный Дух (30 конфет): парение, двойной прыжок и призрачный щит",
-      "cover": "https://img.itch.zone/aW1nLzMxNDUzMDUyLnBuZw==/original/pJ2EMu.png",
+      "cover": "https://img.itch.zone/aW1nLzMxOTc4NDYwLmpwZw==/original/Qi6cTd.jpg",
       "shots": [
-        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTUzMjY0Ny5wbmc=/original/cbzGu%2B.png",
-        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTUzMjY4OC5wbmc=/original/JHZXR%2F.png",
-        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTUzMjcwNy5wbmc=/original/08HNkh.png",
-        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTUzMjc3Ni5wbmc=/original/VBvR44.png"
+        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTk3Nzk0MS5wbmc=/original/%2BPtxxF.png",
+        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTk3Nzk0Mi5wbmc=/original/E57LkO.png",
+        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTk3Nzk0My5wbmc=/original/mfbqEe.png"
       ],
       "playUrl": "https://muov.itch.io/glance-up-halloween-edition",
       "trailerUrl": "",
@@ -123,7 +149,7 @@
       "featured": true,
       "tags": [],
       "itchId": "5245590",
-      "itchUrl": "https://muov.itch.io/glance-up-halloween-edition",
+      "itchUrl": "https://muov.itch.io/glance-up-winter-edition",
       "stats": {
         "downloads": null,
         "views": null,
@@ -174,5 +200,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-08T12:57:30Z"
+  "updatedAt": "2026-11-09T15:36:56Z"
 }
