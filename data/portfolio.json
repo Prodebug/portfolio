@@ -33,15 +33,21 @@
       "year": 2026,
       "role": "разработка",
       "status": "jam",
-      "genres": [],
+      "genres": [
+        "Shooter"
+      ],
       "platforms": [
         "Windows",
-        "Linux",
         "Web"
       ],
       "description": "You are not a pilot. You are a living, unstable energy core &mdash; and without a body, you won&#x27;t survive for long.\n\nIn a world overrun by hostile machines, your only chance of survival is to take control of other robots. Launch an energy cable, capture a machine, and turn it into your weapon. But every body has a limit: your energy slowly overloads its systems, forcing you to abandon it and find another before time runs out.\n\nOne core. Countless machines. No second chances.\n\nClick and Enjoy",
       "cover": "https://img.itch.zone/aW1nLzMyMDIzMDc3LmpwZw==/original/qNR61a.jpg",
-      "shots": [],
+      "shots": [
+        "https://img.itch.zone/aW1hZ2UvNTMyNzg4Ny8zMjAzMjMyNC5wbmc=/original/eJ2jnU.png",
+        "https://img.itch.zone/aW1hZ2UvNTMyNzg4Ny8zMjAzMjMyMi5wbmc=/original/yVBc7K.png",
+        "https://img.itch.zone/aW1hZ2UvNTMyNzg4Ny8zMjAzMjMyMS5wbmc=/original/7ck0xm.png",
+        "https://img.itch.zone/aW1hZ2UvNTMyNzg4Ny8zMjAzMjMyMy5wbmc=/original/VjWCu%2F.png"
+      ],
       "playUrl": "https://muov.itch.io/core-jacker",
       "trailerUrl": "",
       "repoUrl": "",
@@ -200,5 +206,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-09T15:36:56Z"
+  "updatedAt": "2026-11-10T14:32:45Z"
 }
