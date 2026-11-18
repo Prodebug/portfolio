@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sync games and exact stats from itch.io (Official API + public page enrichment) into data/portfolio.json."""
+"""Sync games and exact stats from itch.io into data/portfolio.json."""
 from __future__ import annotations
 
 import html as html_lib
@@ -11,10 +11,10 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "portfolio.json"
-ITCH_USER = "https://itch.io"
-UA = "MuovPortfolioSync/2.0 (+github actions)"
+ITCH_USER = "https://" + "muov" + ".itch.io/"
+UA = "MuovPortfolioSync/2.2 (+github actions)"
 
 
 def fetch_text(url: str) -> str:
@@ -39,11 +39,10 @@ def clean_text(raw: str) -> str:
 
 
 def fetch_api_games(api_key: str) -> dict[str, dict]:
-    """Fetch exact views_count, downloads_count, purchases_count from itch.io API."""
     if not api_key:
         print("info: ITCH_API_KEY is not set; using public HTML fallback only.")
         return {}
-    url = f"https://itch.io{api_key.strip()}/my-games"
+    url = "https://itch.io" + "api/1/" + api_key.strip() + "/my-games"
     try:
         payload = fetch_json(url)
     except urllib.error.HTTPError as e:
@@ -60,18 +59,16 @@ def fetch_api_games(api_key: str) -> dict[str, dict]:
         gid = str(item.get("id") or "")
         if not gid:
             continue
-        raw_url = str(item.get("url") or "")
+        raw_url = re.sub(r"\?.*$", "", str(item.get("url") or "")).strip()
         by_id[gid] = {
             "itchId": gid,
             "title": clean_text(item.get("title") or ""),
             "tagline": clean_text(item.get("short_text") or ""),
-            "itchUrl": raw_url.split("?")[0],
+            "itchUrl": raw_url,
             "cover": item.get("cover_url") or "",
-            "published": bool(item.get("published", True)),
             "publishedAt": item.get("published_at") or item.get("created_at") or "",
             "views": int(item.get("views_count") or 0),
             "downloads": int(item.get("downloads_count") or 0),
-            "purchases": int(item.get("purchases_count") or 0),
             "platforms_api": [
                 name
                 for flag, name in (
@@ -109,11 +106,12 @@ def parse_profile_games(html: str) -> list[dict]:
         cover = cover_m.group(1) if cover_m else ""
         if cover and re.search(r"/\d+x\d+", cover):
             cover = re.sub(r"/\d+x\d+[^/]*/", "/original/", cover)
+        clean_u = re.sub(r"\?.*$", "", url).strip()
         games.append(
             {
                 "itchId": gid,
                 "slug": slug,
-                "itchUrl": url.split("?")[0],
+                "itchUrl": clean_u,
                 "title": title,
                 "cover": cover,
             }
@@ -126,7 +124,6 @@ def parse_profile_games(html: str) -> list[dict]:
         out.append(g)
     return out
 
-
 def enrich_game(url: str) -> dict:
     try:
         html = fetch_text(url)
@@ -135,7 +132,7 @@ def enrich_game(url: str) -> dict:
         return {}
     info: dict = {}
 
-    h1_m = re.search(r"<h1[^>]*class=\"game_title\"[^>]*>([^<]+)</h1>", html, re.I)
+    h1_m = re.search(r'<h1[^>]*class="game_title"[^>]*>([^<]+)</h1>', html, re.I)
     if h1_m:
         info["title"] = clean_text(h1_m.group(1))
 
@@ -240,7 +237,7 @@ def merge(existing: dict, scraped: list[dict], api_by_id: dict[str, dict]) -> di
     for s in scraped:
         gid_str = str(s["itchId"])
         api_item = api_by_id.get(gid_str) or {}
-        actual_url = (api_item.get("itchUrl") or s["itchUrl"]).rstrip("/")
+        actual_url = re.sub(r"\?.*$", "", str(api_item.get("itchUrl") or s["itchUrl"])).rstrip("/")
         old = by_itch.get(gid_str) or by_url.get(actual_url) or by_url.get(s["itchUrl"].rstrip("/"))
         extra = enrich_game(actual_url)
 
@@ -276,84 +273,92 @@ def merge(existing: dict, scraped: list[dict], api_by_id: dict[str, dict]) -> di
             if fresh_title:
                 game["title"] = fresh_title
             if api_item.get("tagline") and not game.get("tagline"):
-game["tagline"] = api_item["tagline"]
-if fresh_cover and (not game.get("cover") or str(game["cover"]).startswith("http")):
-game["cover"] = fresh_cover
-if platforms:
-game["platforms"] = platforms
-for k in ("genres", "shots", "status", "tags"):
-if extra.get(k):
-game[k] = extra[k]
-if year:
-game["year"] = year
-if extra.get("description") and (
-not (old.get("description") or "").strip() or "ХЭЛЛОУИН" in old.get("description", "")
-):
-game["description"] = extra["description"]
-game["stats"] = stats
-merged.append(game)
-seen_ids.add(game.get("id") or gid_str)
-else:
-slug = actual_url.rstrip("/").split("/")[-1] or s["slug"]
-gid = slug_id(slug)
-game = {
-"id": gid,
-"title": fresh_title,
-"tagline": api_item.get("tagline") or "",
-"year": year or datetime.now().year,
-"role": "разработка",
-"status": extra.get("status") or "released",
-"genres": extra.get("genres") or [],
-"platforms": platforms,
-"description": extra.get("description") or "",
-"cover": fresh_cover,
-"shots": extra.get("shots") or [],
-"playUrl": actual_url,
-"trailerUrl": "",
-"repoUrl": "",
-"featured": len(merged) == 0 and len(old_games) == 0,
-"tags": extra.get("tags") or [],
-"itchId": gid_str,
-"itchUrl": actual_url,
-"stats": stats,
-}
-merged.append(game)
-seen_ids.add(gid)
-for g in old_games:
-key = g.get("id") or g.get("itchId")
-if key in seen_ids:
-continue
-if not g.get("itchId") and not (
-g.get("itchUrl")
-or str(g.get("playUrl") or "").startswith("itch.io")
-):
-merged.append(g)
-seen_ids.add(key)
-if merged and not any(g.get("featured") for g in merged):
-merged[0]["featured"] = True
-return {
-"profile": profile,
-"games": merged,
-"updatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-}
+                game["tagline"] = api_item["tagline"]
+            if fresh_cover and (not game.get("cover") or str(game["cover"]).startswith("http")):
+                game["cover"] = fresh_cover
+            if platforms:
+                game["platforms"] = platforms
+            for k in ("genres", "shots", "status", "tags"):
+                if extra.get(k):
+                    game[k] = extra[k]
+            if year:
+                game["year"] = year
+            if extra.get("description") and (
+                not (old.get("description") or "").strip() or "ХЭЛЛОУИН" in old.get("description", "")
+            ):
+                game["description"] = extra["description"]
+            game["stats"] = stats
+            merged.append(game)
+            seen_ids.add(game.get("id") or gid_str)
+        else:
+            slug = actual_url.rstrip("/").split("/").pop() or s["slug"]
+            gid = slug_id(slug)
+            game = {
+                "id": gid,
+                "title": fresh_title,
+                "tagline": api_item.get("tagline") or "",
+                "year": year or datetime.now().year,
+                "role": "разработка",
+                "status": extra.get("status") or "released",
+                "genres": extra.get("genres") or [],
+                "platforms": platforms,
+                "description": extra.get("description") or "",
+                "cover": fresh_cover,
+                "shots": extra.get("shots") or [],
+                "playUrl": actual_url,
+                "trailerUrl": "",
+                "repoUrl": "",
+                "featured": len(merged) == 0 and len(old_games) == 0,
+                "tags": extra.get("tags") or [],
+                "itchId": gid_str,
+                "itchUrl": actual_url,
+                "stats": stats,
+            }
+            merged.append(game)
+            seen_ids.add(gid)
+
+    for g in old_games:
+        key = g.get("id") or g.get("itchId")
+        if key in seen_ids:
+            continue
+        if not g.get("itchId") and not (
+            g.get("itchUrl")
+            or str(g.get("playUrl") or "").startswith(ITCH_USER)
+        ):
+            merged.append(g)
+            seen_ids.add(key)
+
+    if merged and not any(g.get("featured") for g in merged):
+        first_game = next(iter(merged))
+        first_game["featured"] = True
+
+    return {
+        "profile": profile,
+        "games": merged,
+        "updatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+
+
 def main() -> None:
-api_key = os.environ.get("ITCH_API_KEY", "").strip()
-api_by_id = fetch_api_games(api_key)
-html = fetch_text(ITCH_USER)
-scraped = parse_profile_games(html)
-print(f"public profile: found {len(scraped)} game(s)")
-for s in scraped:
-print(f"  - [{s['itchId']}] {s['title']} ({s['itchUrl']})")
-existing = (
-json.loads(DATA.read_text(encoding="utf-8"))
-if DATA.exists()
-else {"profile": {}, "games": []}
-)
-result = merge(existing, scraped, api_by_id)
-DATA.parent.mkdir(parents=True, exist_ok=True)
-DATA.write_text(
-json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-)
-print(f"wrote {DATA} with {len(result['games'])} game(s)")
-if name == "main":
-main()
+    api_key = os.environ.get("ITCH_API_KEY", "").strip()
+    api_by_id = fetch_api_games(api_key)
+    html = fetch_text(ITCH_USER)
+    scraped = parse_profile_games(html)
+    print(f"public profile: found {len(scraped)} game(s)")
+    for s in scraped:
+        print(f"  - [{s['itchId']}] {s['title']} ({s['itchUrl']})")
+    existing = (
+        json.loads(DATA.read_text(encoding="utf-8"))
+        if DATA.exists()
+        else {"profile": {}, "games": []}
+    )
+    result = merge(existing, scraped, api_by_id)
+    DATA.parent.mkdir(parents=True, exist_ok=True)
+    DATA.write_text(
+        json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    print(f"wrote {DATA} with {len(result['games'])} game(s)")
+
+
+if __name__ == "__main__":
+    main()
