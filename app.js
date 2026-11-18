@@ -4,8 +4,34 @@
   const CREDS_KEY = "muov-admin-creds";
   const LANG_KEY = "muov-lang";
   const THEME_KEY = "muov-theme";
+  const SEASON_KEY = "muov-season";
   const FAV_KEY = "muov-favorites";
   const COUNTER_NAMESPACE = "muov-portfolio";
+  const VALID_SEASONS = ["autumn", "winter", "spring", "summer", "rain"];
+  const SEASON_ICONS = {
+    auto: "🧭",
+    autumn: "🍂",
+    winter: "❄️",
+    spring: "🌸",
+    summer: "☀️",
+    rain: "🌧️",
+  };
+  const THEME_COLORS = {
+    dark: {
+      summer: "#0f1511",
+      autumn: "#14100d",
+      winter: "#0c1218",
+      spring: "#0f1612",
+      rain: "#0c1315",
+    },
+    light: {
+      summer: "#f4efe3",
+      autumn: "#f6efe4",
+      winter: "#eef4fa",
+      spring: "#f5f3ec",
+      rain: "#ecf2f3",
+    },
+  };
 
   const DEFAULT_USER = "muov";
   const DEFAULT_PASS_HASH =
@@ -57,6 +83,21 @@
       adminRibbonTitle: "Режим студии",
       heroSeasonDark: "НОЧНОЙ ЛЕС // INDIE",
       heroSeasonLight: "УТРЕННИЙ ЛУГ // INDIE",
+      seasonBtnTitle: "Погода и время года",
+      seasonAuto: "Авто",
+      seasonAutoPrefix: "Сейчас: ",
+      seasonAutumn: "Осень",
+      seasonAutumnSub: "Листопад",
+      seasonWinter: "Зима",
+      seasonWinterSub: "Снегопад",
+      seasonSpring: "Весна",
+      seasonSpringSub: "Лепестки",
+      seasonSummer: "Лето",
+      seasonSummerSub: "Светлячки",
+      seasonRain: "Дождь",
+      seasonRainSub: "Лесной дождь",
+      seasonToast: (label) => `Атмосфера: ${label}`,
+      paletteGroupWeather: "Погода и сезон",
       btnExplore: "Смотреть проекты",
       btnRandom: "Случайная игра",
       lblQuickLaunch: "Быстрый запуск",
@@ -220,6 +261,21 @@
       adminRibbonTitle: "Studio Admin",
       heroSeasonDark: "NIGHT FOREST // INDIE",
       heroSeasonLight: "MORNING MEADOW // INDIE",
+      seasonBtnTitle: "Weather & season",
+      seasonAuto: "Auto",
+      seasonAutoPrefix: "Now: ",
+      seasonAutumn: "Autumn",
+      seasonAutumnSub: "Falling leaves",
+      seasonWinter: "Winter",
+      seasonWinterSub: "Snowfall",
+      seasonSpring: "Spring",
+      seasonSpringSub: "Petals",
+      seasonSummer: "Summer",
+      seasonSummerSub: "Fireflies",
+      seasonRain: "Rain",
+      seasonRainSub: "Forest rain",
+      seasonToast: (label) => `Atmosphere: ${label}`,
+      paletteGroupWeather: "Weather & Season",
       btnExplore: "Explore Projects",
       btnRandom: "Random Game",
       lblQuickLaunch: "Quick Launch",
@@ -367,6 +423,47 @@
     }
   })();
 
+  let seasonPref = (() => {
+    const saved = localStorage.getItem(SEASON_KEY) || "auto";
+    return VALID_SEASONS.includes(saved) ? saved : "auto";
+  })();
+
+  function calendarSeason(d = new Date()) {
+    const m = d.getMonth();
+    if (m === 11 || m <= 1) return "winter";
+    if (m <= 4) return "spring";
+    if (m <= 7) return "summer";
+    return "autumn";
+  }
+
+  function resolvedSeason() {
+    return seasonPref === "auto" ? calendarSeason() : seasonPref;
+  }
+
+  function seasonTitle(s) {
+    const map = {
+      auto: t("seasonAuto"),
+      autumn: t("seasonAutumn"),
+      winter: t("seasonWinter"),
+      spring: t("seasonSpring"),
+      summer: t("seasonSummer"),
+      rain: t("seasonRain"),
+    };
+    return map[s] || s;
+  }
+
+  function seasonSub(s) {
+    if (s === "auto") return `${t("seasonAutoPrefix")}${seasonTitle(calendarSeason())}`;
+    const map = {
+      autumn: t("seasonAutumnSub"),
+      winter: t("seasonWinterSub"),
+      spring: t("seasonSpringSub"),
+      summer: t("seasonSummerSub"),
+      rain: t("seasonRainSub"),
+    };
+    return map[s] || "";
+  }
+
   let published = structuredClone(FALLBACK_DATA);
   let state = structuredClone(FALLBACK_DATA);
   let isAdmin = false;
@@ -490,15 +587,67 @@
     return normalized.slice(0, maxLen).replace(/\s+\S*$/, "") + "…";
   }
 
+  let rebuildWeatherParticles = null;
+
+  function updateThemeColorMeta() {
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (!metaTheme) return;
+    const s = resolvedSeason();
+    const color = THEME_COLORS[theme]?.[s] || (theme === "light" ? "#f4efe3" : "#0f1511");
+    metaTheme.setAttribute("content", color);
+  }
+
+  function updateSeasonUI() {
+    const active = resolvedSeason();
+    const icon = SEASON_ICONS[active] || "🌿";
+    const label = seasonTitle(active);
+    if ($("seasonIcon")) $("seasonIcon").textContent = icon;
+    if ($("seasonLabel")) $("seasonLabel").textContent = label;
+    if ($("btnSeason")) {
+      $("btnSeason").title = t("seasonBtnTitle");
+      $("btnSeason").setAttribute("aria-label", `${t("seasonBtnTitle")}: ${label}`);
+    }
+    if ($("heroSeason")) {
+      const modeTag = seasonPref === "auto" ? t("seasonAuto").toUpperCase() : seasonSub(active).toUpperCase();
+      $("heroSeason").textContent = `${icon} ${label.toUpperCase()} // ${modeTag}`;
+      $("heroSeason").title = t("seasonBtnTitle");
+    }
+    document.querySelectorAll("#seasonMenu [data-season-pick]").forEach((btn) => {
+      const pick = btn.getAttribute("data-season-pick");
+      const selected = pick === seasonPref;
+      btn.classList.toggle("is-selected", selected);
+      btn.setAttribute("aria-checked", String(selected));
+      const strong = btn.querySelector("strong");
+      const small = btn.querySelector("small");
+      if (strong) strong.textContent = seasonTitle(pick);
+      if (small) small.textContent = seasonSub(pick);
+    });
+  }
+
+  function applySeason(nextPref = seasonPref, notify = false) {
+    seasonPref = VALID_SEASONS.includes(nextPref) ? nextPref : "auto";
+    localStorage.setItem(SEASON_KEY, seasonPref);
+    const active = resolvedSeason();
+    document.documentElement.setAttribute("data-season", active);
+    document.documentElement.setAttribute("data-season-pref", seasonPref);
+    updateThemeColorMeta();
+    updateSeasonUI();
+    if (typeof rebuildWeatherParticles === "function") rebuildWeatherParticles();
+    if (notify) {
+      const desc =
+        seasonPref === "auto"
+          ? `${t("seasonAuto")} (${seasonTitle(active)})`
+          : seasonTitle(active);
+      toast(t("seasonToast")(desc), "ok", 2300);
+    }
+  }
+
   function applyTheme(nextTheme) {
     theme = nextTheme === "light" ? "light" : "dark";
     localStorage.setItem(THEME_KEY, theme);
     document.documentElement.setAttribute("data-theme", theme);
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if (metaTheme) metaTheme.setAttribute("content", theme === "light" ? "#f4efe3" : "#0f1511");
-    if ($("heroSeason")) {
-      $("heroSeason").textContent = theme === "light" ? t("heroSeasonLight") : t("heroSeasonDark");
-    }
+    updateThemeColorMeta();
+    updateSeasonUI();
     document.querySelectorAll("iframe.giscus-frame").forEach((iframe) => {
       try {
         iframe.contentWindow.postMessage(
@@ -1011,9 +1160,7 @@
     const atmBtn = document.querySelector('[data-craft-query="Atmospheric"]');
     if (atmBtn) atmBtn.innerHTML = `<span>🌙</span> ${esc(t("craftAtmosphere"))}`;
 
-    if ($("heroSeason")) {
-      $("heroSeason").textContent = theme === "light" ? t("heroSeasonLight") : t("heroSeasonDark");
-    }
+    updateSeasonUI();
     if ($("kbdHints")) {
       $("kbdHints").innerHTML =
         lang === "en"
@@ -2340,6 +2487,16 @@
           },
     ].filter((a) => !q || a.label.toLowerCase().includes(q) || a.meta.includes(q));
 
+    const weatherActions = ["auto", ...VALID_SEASONS]
+      .map((s) => ({
+        id: `season-${s}`,
+        icon: SEASON_ICONS[s] || "🌿",
+        label: `${seasonTitle(s)} — ${seasonSub(s)}`,
+        meta: s === seasonPref ? "✓" : "weather",
+        run: () => applySeason(s, true),
+      }))
+      .filter((a) => !q || a.label.toLowerCase().includes(q) || a.meta.includes(q));
+
     const out = [];
     if (games.length) {
       out.push({ type: "group", label: t("paletteGames") });
@@ -2356,6 +2513,12 @@
     if (actions.length) {
       out.push({ type: "group", label: t("paletteActions") });
       actions.forEach((a) => {
+        out.push({ type: "item", icon: a.icon, label: a.label, meta: a.meta, run: a.run });
+      });
+    }
+    if (weatherActions.length) {
+      out.push({ type: "group", label: t("paletteGroupWeather") });
+      weatherActions.forEach((a) => {
         out.push({ type: "item", icon: a.icon, label: a.label, meta: a.meta, run: a.run });
       });
     }
@@ -2414,8 +2577,8 @@
     item.run();
   }
 
-  // ---------- Ambient Animations (Fireflies, Parallax, Scroll Reveal, Card Tilt) ----------
-  function initFireflies() {
+  // ---------- Ambient Weather & Season Canvas (Leaves, Snow, Petals, Fireflies, Rain) ----------
+  function initWeatherCanvas() {
     const canvas = $("fireflies");
     if (!canvas || prefersReducedMotion || typeof canvas.getContext !== "function") return;
     const ctx = canvas.getContext("2d");
@@ -2425,7 +2588,108 @@
     let h = 0;
     let rafId = 0;
     let particles = [];
+    let ripples = [];
     const mouse = { x: -9999, y: -9999 };
+
+    const AUTUMN_COLORS = [
+      [231, 150, 77],
+      [217, 100, 58],
+      [245, 194, 88],
+      [196, 114, 60],
+    ];
+    const SPRING_COLORS = [
+      [245, 166, 194],
+      [255, 212, 228],
+      [124, 224, 152],
+    ];
+
+    function spawnParticle(season, randomY = true) {
+      const x = Math.random() * (w + 80) - 40;
+      const y = randomY ? Math.random() * h : season === "summer" ? h + 12 : -18;
+      if (season === "rain") {
+        return {
+          x,
+          y: randomY ? Math.random() * h : -30,
+          vx: -1.4 - Math.random() * 0.7,
+          vy: 11 + Math.random() * 6,
+          len: 14 + Math.random() * 14,
+          alpha: 0.22 + Math.random() * 0.3,
+        };
+      }
+      if (season === "autumn") {
+        return {
+          x,
+          y,
+          vx: 0.35 + Math.random() * 0.65,
+          vy: 0.75 + Math.random() * 1.05,
+          size: 5 + Math.random() * 6,
+          angle: Math.random() * Math.PI * 2,
+          spin: (Math.random() - 0.5) * 0.04,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.02 + Math.random() * 0.02,
+          color: AUTUMN_COLORS[Math.floor(Math.random() * AUTUMN_COLORS.length)],
+        };
+      }
+      if (season === "winter") {
+        const layer = Math.random();
+        return {
+          x,
+          y,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: 0.55 + layer * 1.15,
+          r: 1.5 + layer * 2.8,
+          crystal: layer > 0.78,
+          angle: Math.random() * Math.PI,
+          spin: (Math.random() - 0.5) * 0.015,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.015 + Math.random() * 0.02,
+        };
+      }
+      if (season === "spring") {
+        return {
+          x,
+          y,
+          vx: 0.4 + Math.random() * 0.6,
+          vy: 0.55 + Math.random() * 0.85,
+          size: 4 + Math.random() * 4.5,
+          angle: Math.random() * Math.PI * 2,
+          spin: (Math.random() - 0.5) * 0.03,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.02 + Math.random() * 0.02,
+          color: SPRING_COLORS[Math.floor(Math.random() * SPRING_COLORS.length)],
+        };
+      }
+      // summer: fireflies & pollen
+      return {
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: -0.16 - Math.random() * 0.34,
+        r: 1.5 + Math.random() * 2.3,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.016 + Math.random() * 0.024,
+        kind: Math.random() < 0.65 ? "amber" : "moss",
+      };
+    }
+
+    function targetCountFor(season) {
+      const area = (w || 1024) * (h || 768);
+      if (season === "rain") return Math.min(125, Math.max(45, Math.round(area / 12000)));
+      if (season === "winter") return Math.min(80, Math.max(30, Math.round(area / 18000)));
+      if (season === "autumn" || season === "spring") {
+        return Math.min(46, Math.max(18, Math.round(area / 32000)));
+      }
+      return Math.min(52, Math.max(18, Math.round(area / 28000)));
+    }
+
+    function populate(season) {
+      const count = targetCountFor(season);
+      particles = [];
+      ripples = [];
+      for (let i = 0; i < count; i++) {
+        particles.push(spawnParticle(season, true));
+      }
+    }
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -2434,20 +2698,41 @@
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const targetCount = Math.min(52, Math.max(18, Math.round((w * h) / 28000)));
-      while (particles.length < targetCount) {
-        particles.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.25,
-          vy: -0.15 - Math.random() * 0.35,
-          r: 1.4 + Math.random() * 2.4,
-          phase: Math.random() * Math.PI * 2,
-          speed: 0.015 + Math.random() * 0.025,
-          kind: Math.random() < 0.65 ? "amber" : "moss",
-        });
+      populate(resolvedSeason());
+    }
+
+    rebuildWeatherParticles = () => {
+      populate(resolvedSeason());
+    };
+
+    function applyMouseBreeze(p, radius = 110, strength = 0.45) {
+      const dx = p.x - mouse.x;
+      const dy = p.y - mouse.y;
+      const dist2 = dx * dx + dy * dy;
+      if (dist2 > 1 && dist2 < radius * radius) {
+        const dist = Math.sqrt(dist2);
+        const force = ((radius - dist) / radius) * strength;
+        p.x += (dx / dist) * force;
+        p.y += (dy / dist) * force;
       }
-      if (particles.length > targetCount) particles.length = targetCount;
+    }
+
+    function drawSnowCrystal(x, y, r, angle, alpha, isLight) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.strokeStyle = isLight ? `rgba(45, 118, 168, ${alpha})` : `rgba(218, 240, 255, ${alpha})`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (let i = 0; i < 3; i++) {
+        const a = (Math.PI / 3) * i;
+        const dx = Math.cos(a) * r * 1.45;
+        const dy = Math.sin(a) * r * 1.45;
+        ctx.moveTo(-dx, -dy);
+        ctx.lineTo(dx, dy);
+      }
+      ctx.stroke();
+      ctx.restore();
     }
 
     function tick() {
@@ -2456,48 +2741,127 @@
         return;
       }
       ctx.clearRect(0, 0, w, h);
+      const season = resolvedSeason();
       const isLight = theme === "light";
-      for (const p of particles) {
-        p.phase += p.speed;
-        const drift = Math.sin(p.phase * 0.7) * 0.22;
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist2 = dx * dx + dy * dy;
-        if (dist2 > 1 && dist2 < 12100) {
-          const dist = Math.sqrt(dist2);
-          const force = ((110 - dist) / 110) * 0.45;
-          p.x += (dx / dist) * force;
-          p.y += (dy / dist) * force;
+
+      if (season === "rain") {
+        ctx.lineWidth = 1.2;
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.y > h - 18) {
+            if (Math.random() < 0.18 && ripples.length < 30) {
+              ripples.push({ x: p.x, y: h - 10 - Math.random() * 28, r: 2, max: 14 + Math.random() * 12, a: 0.4 });
+            }
+            Object.assign(p, spawnParticle("rain", false));
+          }
+          if (p.x < -30) p.x = w + 20;
+          const stroke = isLight
+            ? `rgba(40, 122, 115, ${(p.alpha * 0.85).toFixed(2)})`
+            : `rgba(148, 212, 224, ${p.alpha.toFixed(2)})`;
+          ctx.strokeStyle = stroke;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x - p.vx * 1.3, p.y - p.len);
+          ctx.stroke();
         }
-        p.x += p.vx + drift;
-        p.y += p.vy;
-
-        if (p.y < -14) {
-          p.y = h + 14;
-          p.x = Math.random() * w;
+        for (let i = ripples.length - 1; i >= 0; i--) {
+          const rp = ripples[i];
+          rp.r += 0.65;
+          rp.a *= 0.92;
+          if (rp.a < 0.03 || rp.r > rp.max) {
+            ripples.splice(i, 1);
+            continue;
+          }
+          ctx.strokeStyle = isLight
+            ? `rgba(40, 122, 115, ${rp.a.toFixed(2)})`
+            : `rgba(148, 212, 224, ${rp.a.toFixed(2)})`;
+          ctx.beginPath();
+          ctx.ellipse(rp.x, rp.y, rp.r, rp.r * 0.35, 0, 0, Math.PI * 2);
+          ctx.stroke();
         }
-        if (p.x < -14) p.x = w + 14;
-        if (p.x > w + 14) p.x = -14;
+      } else if (season === "autumn" || season === "spring") {
+        for (const p of particles) {
+          p.phase += p.speed;
+          p.angle += p.spin;
+          applyMouseBreeze(p, 120, 0.7);
+          p.x += p.vx + Math.sin(p.phase) * 0.55;
+          p.y += p.vy;
+          if (p.y > h + 24 || p.x > w + 40) {
+            Object.assign(p, spawnParticle(season, false));
+          }
+          const [r, g, b] = p.color;
+          const alpha = isLight ? 0.65 : 0.78;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.angle);
+          ctx.scale(1, 0.65 + 0.35 * Math.sin(p.phase));
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          ctx.beginPath();
+          ctx.moveTo(0, -p.size);
+          ctx.quadraticCurveTo(p.size * 0.9, -p.size * 0.2, 0, p.size);
+          ctx.quadraticCurveTo(-p.size * 0.9, -p.size * 0.2, 0, -p.size);
+          ctx.fill();
+          ctx.restore();
+        }
+      } else if (season === "winter") {
+        for (const p of particles) {
+          p.phase += p.speed;
+          p.angle += p.spin;
+          applyMouseBreeze(p, 115, 0.65);
+          p.x += p.vx + Math.sin(p.phase) * 0.35;
+          p.y += p.vy;
+          if (p.y > h + 16) {
+            Object.assign(p, spawnParticle("winter", false));
+          }
+          if (p.x < -16) p.x = w + 16;
+          if (p.x > w + 16) p.x = -16;
+          const alpha = (0.42 + 0.4 * Math.sin(p.phase)) * (isLight ? 0.75 : 0.9);
+          if (p.crystal) {
+            drawSnowCrystal(p.x, p.y, p.r, p.angle, alpha.toFixed(2), isLight);
+          } else {
+            ctx.fillStyle = isLight
+              ? `rgba(60, 128, 178, ${alpha.toFixed(2)})`
+              : `rgba(225, 242, 255, ${alpha.toFixed(2)})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      } else {
+        // summer: fireflies & golden pollen
+        for (const p of particles) {
+          p.phase += p.speed;
+          const drift = Math.sin(p.phase * 0.7) * 0.22;
+          applyMouseBreeze(p, 110, 0.45);
+          p.x += p.vx + drift;
+          p.y += p.vy;
+          if (p.y < -14) {
+            p.y = h + 14;
+            p.x = Math.random() * w;
+          }
+          if (p.x < -14) p.x = w + 14;
+          if (p.x > w + 14) p.x = -14;
 
-        const alpha = (0.28 + 0.55 * (0.5 + 0.5 * Math.sin(p.phase))) * (isLight ? 0.55 : 0.85);
-        const rgb =
-          p.kind === "amber"
-            ? isLight
-              ? "196, 138, 34"
-              : "241, 196, 91"
-            : isLight
-            ? "63, 125, 69"
-            : "143, 210, 122";
-
-        const glowR = p.r * 4.5;
-        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
-        grad.addColorStop(0, `rgba(${rgb}, ${alpha.toFixed(3)})`);
-        grad.addColorStop(0.45, `rgba(${rgb}, ${(alpha * 0.35).toFixed(3)})`);
-        grad.addColorStop(1, `rgba(${rgb}, 0)`);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
-        ctx.fill();
+          const alpha = (0.28 + 0.55 * (0.5 + 0.5 * Math.sin(p.phase))) * (isLight ? 0.55 : 0.85);
+          const rgb =
+            p.kind === "amber"
+              ? isLight
+                ? "196, 138, 34"
+                : "241, 196, 91"
+              : isLight
+              ? "63, 125, 69"
+              : "143, 210, 122";
+          const glowR = p.r * 4.5;
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+          grad.addColorStop(0, `rgba(${rgb}, ${alpha.toFixed(3)})`);
+          grad.addColorStop(0.45, `rgba(${rgb}, ${(alpha * 0.35).toFixed(3)})`);
+          grad.addColorStop(1, `rgba(${rgb}, 0)`);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
       rafId = requestAnimationFrame(tick);
     }
@@ -2642,6 +3006,38 @@
   // ---------- Event Bindings ----------
   $("btnTheme")?.addEventListener("click", () => {
     applyTheme(theme === "light" ? "dark" : "light");
+  });
+
+  const seasonMenu = $("seasonMenu");
+  const btnSeason = $("btnSeason");
+  function setSeasonMenuOpen(open) {
+    if (!seasonMenu) return;
+    seasonMenu.hidden = !open;
+    if (btnSeason) btnSeason.setAttribute("aria-expanded", String(open));
+  }
+
+  btnSeason?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setSeasonMenuOpen(seasonMenu?.hidden !== false);
+  });
+
+  $("heroSeason")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setSeasonMenuOpen(true);
+    btnSeason?.focus?.();
+  });
+
+  seasonMenu?.addEventListener("click", (e) => {
+    const opt = e.target.closest("[data-season-pick]");
+    if (!opt) return;
+    applySeason(opt.getAttribute("data-season-pick"), true);
+    setSeasonMenuOpen(false);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (seasonMenu && !seasonMenu.hidden && !e.target.closest?.("#seasonControl")) {
+      setSeasonMenuOpen(false);
+    }
   });
 
   $("btnPalette")?.addEventListener("click", openPalette);
@@ -2864,7 +3260,10 @@
   window.addEventListener("blur", hideDropVeil);
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") hideDropVeil();
+    if (e.key === "Escape") {
+      hideDropVeil();
+      setSeasonMenuOpen(false);
+    }
 
     if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === "k") {
       e.preventDefault();
@@ -2898,6 +3297,7 @@
 
   async function boot() {
     applyTheme(theme);
+    applySeason(seasonPref, false);
     hideDropVeil();
     published = structuredClone(FALLBACK_DATA);
     let loadedJson = false;
@@ -2917,7 +3317,7 @@
     state = draft || structuredClone(published);
     renderAll();
 
-    initFireflies();
+    initWeatherCanvas();
     initScrollAndReveal();
     initCardInteractions();
     registerServiceWorker();
