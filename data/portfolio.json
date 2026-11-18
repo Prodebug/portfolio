@@ -53,10 +53,20 @@
       "trailerUrl": "",
       "repoUrl": "",
       "featured": false,
-      "tags": [],
+      "tags": [
+        "2D",
+        "Fantasy",
+        "Godot",
+        "Indie",
+        "Pixel Art",
+        "Singleplayer"
+      ],
       "itchId": "5388914",
       "itchUrl": "https://muov.itch.io/hexagonia-2",
       "stats": {
+        "downloads": 0,
+        "views": 0,
+        "plays": 0,
         "rating": 5.0
       }
     },
@@ -86,10 +96,15 @@
       "trailerUrl": "",
       "repoUrl": "",
       "featured": false,
-      "tags": [],
+      "tags": [
+        "Horror"
+      ],
       "itchId": "5327887",
       "itchUrl": "https://muov.itch.io/core-jacker",
       "stats": {
+        "downloads": 0,
+        "views": 0,
+        "plays": 0,
         "rating": 5.0
       }
     },
@@ -119,6 +134,9 @@
       "itchId": "5281935",
       "itchUrl": "https://muov.itch.io/exeforge",
       "stats": {
+        "downloads": 0,
+        "views": 0,
+        "plays": 0,
         "rating": 5.0
       }
     },
@@ -163,7 +181,7 @@
     },
     {
       "id": "glance-up-halloween-edition",
-      "title": "Glance Up: Halloween Edition",
+      "title": "Glance Up: Winter Edition",
       "tagline": "",
       "year": 2026,
       "role": "разработка",
@@ -176,18 +194,25 @@
         "Android",
         "Web"
       ],
-      "description": "🎃 ХЭЛЛОУИНСКИЙ ИВЕНТ УЖЕ В ИГРЕ! 🎃\n\nGlance Up — пиксельный платформер-бесконечный прыгун. Прыгай по платформам всё выше, уворачивайся от деревьев-монстров и собирай монеты.\n\nВ Хэллоуинском режиме:\n\n• Фиолетовое небо и красная луна\n\n• Конфеты, которые падают на платформах\n\n• Новый персонаж — Тыквенный Дух (30 конфет): парение, двойной прыжок и призрачный щит",
+      "description": "❄️ WINTER EVENT IS LIVE! ❄️\r\nGlance Up is a pixel-art endless jumper. Climb higher, dodge tree monsters and collect coins.\n\nWinter mode adds:\n\nCharacters:\n\nControls: touch on mobile / keyboard on PC.\r\nSwitch Winter mode on or off in the main menu.\r\nLanguages: Russian / English (in Settings).\n\nGood Update !!!\n\nVeryy niceee!\n\nA fun game! After a couple of attempts I got the knack of it and was bounding up with joy.",
       "cover": "https://img.itch.zone/aW1nLzMxOTc4NDYwLmpwZw==/original/Qi6cTd.jpg",
       "shots": [
         "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTk3Nzk0MS5wbmc=/original/%2BPtxxF.png",
         "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTk3Nzk0Mi5wbmc=/original/E57LkO.png",
         "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTk3Nzk0My5wbmc=/original/mfbqEe.png"
       ],
-      "playUrl": "https://muov.itch.io/glance-up-halloween-edition",
+      "playUrl": "https://muov.itch.io/glance-up-winter-edition",
       "trailerUrl": "",
       "repoUrl": "",
       "featured": true,
-      "tags": [],
+      "tags": [
+        "2D",
+        "Casual",
+        "Cute",
+        "Endless Runner",
+        "Godot",
+        "Halloween"
+      ],
       "itchId": "5245590",
       "itchUrl": "https://muov.itch.io/glance-up-winter-edition",
       "stats": {
@@ -226,9 +251,10 @@
       "tags": [
         "2D",
         "Godot",
+        "Indie",
+        "No Ai",
         "Pixel Art",
-        "Story Rich",
-        "No AI"
+        "Singleplayer"
       ],
       "itchId": "4820915",
       "itchUrl": "https://muov.itch.io/hexagonia",
@@ -240,5 +266,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-18T14:52:11Z"
+  "updatedAt": "2026-11-18T15:15:03Z"
 }
