@@ -27,7 +27,14 @@
         const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
         const theme = stored === "light" || stored === "dark" ? stored : prefersLight ? "light" : "dark";
         const lang = localStorage.getItem("muov-lang") === "en" ? "en" : "ru";
+        const pref = localStorage.getItem("muov-season") || "auto";
+        const m = new Date().getMonth();
+        const calSeason = m === 11 || m <= 1 ? "winter" : m <= 4 ? "spring" : m <= 7 ? "summer" : "autumn";
+        const valid = ["autumn", "winter", "spring", "summer", "rain"];
+        const season = valid.includes(pref) ? pref : calSeason;
         document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.setAttribute("data-season", season);
+        document.documentElement.setAttribute("data-season-pref", valid.includes(pref) ? pref : "auto");
         document.documentElement.lang = lang;
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta) meta.setAttribute("content", theme === "light" ? "#f4efe3" : "#0f1511");
@@ -96,6 +103,40 @@
           <kbd>Ctrl K</kbd>
         </button>
 
+        <div class="season-control" id="seasonControl">
+          <button type="button" class="season-pill" id="btnSeason" aria-expanded="false" aria-haspopup="menu" aria-controls="seasonMenu" title="Атмосфера и погода">
+            <span id="seasonIcon" aria-hidden="true">🍂</span>
+            <span class="season-pill-label" id="seasonLabel">Осень</span>
+            <span class="season-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="season-menu" id="seasonMenu" role="menu" hidden>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="auto">
+              <span class="s-ico">🧭</span>
+              <span class="s-meta"><strong>Авто</strong><small>По дате</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="autumn">
+              <span class="s-ico">🍂</span>
+              <span class="s-meta"><strong>Осень</strong><small>Листопад</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="winter">
+              <span class="s-ico">❄️</span>
+              <span class="s-meta"><strong>Зима</strong><small>Снегопад</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="spring">
+              <span class="s-ico">🌸</span>
+              <span class="s-meta"><strong>Весна</strong><small>Лепестки</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="summer">
+              <span class="s-ico">☀️</span>
+              <span class="s-meta"><strong>Лето</strong><small>Светлячки</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="rain">
+              <span class="s-ico">🌧️</span>
+              <span class="s-meta"><strong>Дождь</strong><small>Лесной дождь</small></span>
+            </button>
+          </div>
+        </div>
+
         <button type="button" class="icon-btn theme-btn" id="btnTheme" title="Сменить тему" aria-label="Сменить тему">
           <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="4"/>
@@ -158,7 +199,7 @@
             <span class="pulse-dot" aria-hidden="true"></span>
             <span id="heroCity">itch.io · открыт к идеям</span>
           </div>
-          <span class="mono-kicker" id="heroSeason">ИНДИ-МАСТЕРСКАЯ</span>
+          <button type="button" class="season-hero-btn mono-kicker" id="heroSeason" title="Сменить атмосферу">🍂 ОСЕНЬ // АВТО</button>
         </div>
 
         <h1 class="hero-title" id="heroTitle">Muov</h1>
