@@ -84,6 +84,151 @@
   color-scheme: light;
 }
 
+/* ---------- Seasonal & Weather Atmospheres ---------- */
+[data-theme="dark"][data-season="autumn"] {
+  --bg: #14100d;
+  --bg-elev: #1b1511;
+  --bg-soft: #231b15;
+  --surface: rgba(31, 23, 18, 0.8);
+  --surface-solid: #1e1712;
+  --surface-hover: #281f18;
+  --accent: #e7964d;
+  --accent-strong: #bf6426;
+  --accent-ink: #1e1005;
+  --accent-soft: rgba(231, 150, 77, 0.14);
+  --amber: #f5c258;
+  --topo-color: rgba(231, 150, 77, 0.08);
+  --hill-far: #241a13;
+  --hill-near: #1b130e;
+  --glow: 0 0 0 1px rgba(231, 150, 77, 0.25), 0 10px 34px rgba(231, 150, 77, 0.14);
+}
+[data-theme="light"][data-season="autumn"] {
+  --bg: #f6efe4;
+  --bg-elev: #ede2d1;
+  --bg-soft: #e8dac5;
+  --surface: rgba(255, 250, 242, 0.88);
+  --surface-solid: #fffaf2;
+  --surface-hover: #f8eedf;
+  --accent: #b8581c;
+  --accent-strong: #934110;
+  --accent-soft: rgba(184, 88, 28, 0.11);
+  --amber: #d4891e;
+  --topo-color: rgba(184, 88, 28, 0.08);
+  --hill-far: #ebd4b5;
+  --hill-near: #e1c39d;
+  --glow: 0 0 0 1px rgba(184, 88, 28, 0.22), 0 12px 30px rgba(184, 88, 28, 0.12);
+}
+
+[data-theme="dark"][data-season="winter"] {
+  --bg: #0c1218;
+  --bg-elev: #111a22;
+  --bg-soft: #17232e;
+  --surface: rgba(18, 28, 37, 0.8);
+  --surface-solid: #131e28;
+  --surface-hover: #1b2936;
+  --fg: #eef5fc;
+  --muted: #98aec2;
+  --accent: #82d3ff;
+  --accent-strong: #43a3db;
+  --accent-ink: #071926;
+  --accent-soft: rgba(130, 211, 255, 0.14);
+  --amber: #c7e8ff;
+  --topo-color: rgba(130, 211, 255, 0.08);
+  --hill-far: #182531;
+  --hill-near: #111c26;
+  --glow: 0 0 0 1px rgba(130, 211, 255, 0.28), 0 10px 34px rgba(130, 211, 255, 0.14);
+}
+[data-theme="light"][data-season="winter"] {
+  --bg: #eef4fa;
+  --bg-elev: #e3ecf5;
+  --bg-soft: #dae5f0;
+  --surface: rgba(252, 254, 255, 0.88);
+  --surface-solid: #fcfeff;
+  --surface-hover: #f2f7fc;
+  --fg: #182532;
+  --muted: #566b80;
+  --accent: #2579a8;
+  --accent-strong: #195d84;
+  --accent-soft: rgba(37, 121, 168, 0.11);
+  --amber: #4b94c4;
+  --topo-color: rgba(37, 121, 168, 0.09);
+  --hill-far: #d7e6f4;
+  --hill-near: #c7daec;
+  --glow: 0 0 0 1px rgba(37, 121, 168, 0.22), 0 12px 30px rgba(37, 121, 168, 0.12);
+}
+
+[data-theme="dark"][data-season="spring"] {
+  --bg: #0f1612;
+  --bg-elev: #151f19;
+  --bg-soft: #1b2821;
+  --surface: rgba(23, 35, 28, 0.8);
+  --surface-solid: #17221c;
+  --surface-hover: #1e2d24;
+  --accent: #7ce098;
+  --accent-strong: #4ab56a;
+  --accent-ink: #0a1b10;
+  --accent-soft: rgba(124, 224, 152, 0.13);
+  --amber: #f5a6c2;
+  --topo-color: rgba(245, 166, 194, 0.07);
+  --hill-far: #17261d;
+  --hill-near: #111d16;
+  --glow: 0 0 0 1px rgba(124, 224, 152, 0.25), 0 10px 34px rgba(245, 166, 194, 0.12);
+}
+[data-theme="light"][data-season="spring"] {
+  --bg: #f5f3ec;
+  --bg-elev: #eae8dc;
+  --bg-soft: #e3e2d3;
+  --surface: rgba(255, 253, 248, 0.88);
+  --surface-solid: #fffdf8;
+  --surface-hover: #f7f4ec;
+  --accent: #2f8a57;
+  --accent-strong: #226b42;
+  --accent-soft: rgba(47, 138, 87, 0.11);
+  --amber: #d45b87;
+  --topo-color: rgba(212, 91, 135, 0.08);
+  --hill-far: #dcecd7;
+  --hill-near: #cde2c6;
+  --glow: 0 0 0 1px rgba(47, 138, 87, 0.22), 0 12px 30px rgba(212, 91, 135, 0.12);
+}
+
+[data-theme="dark"][data-season="rain"] {
+  --bg: #0c1315;
+  --bg-elev: #121c1f;
+  --bg-soft: #182529;
+  --surface: rgba(20, 30, 34, 0.82);
+  --surface-solid: #141e22;
+  --surface-hover: #1b282d;
+  --fg: #eaf2f3;
+  --muted: #90a7ad;
+  --accent: #6cd0c1;
+  --accent-strong: #3fa295;
+  --accent-ink: #071918;
+  --accent-soft: rgba(108, 208, 193, 0.13);
+  --amber: #8bb8d9;
+  --topo-color: rgba(108, 208, 193, 0.08);
+  --hill-far: #132024;
+  --hill-near: #0e181b;
+  --glow: 0 0 0 1px rgba(108, 208, 193, 0.26), 0 10px 34px rgba(139, 184, 217, 0.14);
+}
+[data-theme="light"][data-season="rain"] {
+  --bg: #ecf2f3;
+  --bg-elev: #e0e8ea;
+  --bg-soft: #d6e1e4;
+  --surface: rgba(249, 252, 253, 0.88);
+  --surface-solid: #f9fcfd;
+  --surface-hover: #edf5f7;
+  --fg: #18262a;
+  --muted: #52686e;
+  --accent: #287a73;
+  --accent-strong: #1c5c56;
+  --accent-soft: rgba(40, 122, 115, 0.11);
+  --amber: #457796;
+  --topo-color: rgba(40, 122, 115, 0.09);
+  --hill-far: #cedee1;
+  --hill-near: #bed2d6;
+  --glow: 0 0 0 1px rgba(40, 122, 115, 0.22), 0 12px 30px rgba(69, 119, 150, 0.12);
+}
+
 *,
 *::before,
 *::after { box-sizing: border-box; }
@@ -253,11 +398,13 @@ kbd {
   opacity: 0.9;
   transform: translate3d(0, calc(var(--scroll-y, 0px) * -0.045), 0);
   will-change: transform;
+  transition: fill 0.6s ease;
 }
 .forest-silhouette .hill-near {
   fill: var(--hill-near);
   transform: translate3d(0, calc(var(--scroll-y, 0px) * -0.08), 0);
   will-change: transform;
+  transition: fill 0.6s ease;
 }
 .topo-lines {
   transform: translate3d(0, calc(var(--scroll-y, 0px) * -0.025), 0);
@@ -376,6 +523,88 @@ kbd {
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 .palette-trigger:hover { border-color: var(--accent); color: var(--fg); }
+
+/* Season & weather picker */
+.season-control { position: relative; }
+.season-pill {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.25rem;
+  padding: 0 0.72rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-solid);
+  color: var(--fg);
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+.season-pill:hover { border-color: var(--accent); background: var(--surface-hover); }
+.season-caret { font-size: 0.7rem; color: var(--muted); transition: transform 0.2s ease; }
+.season-pill[aria-expanded="true"] .season-caret { transform: rotate(180deg); }
+
+.season-menu {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  right: 0;
+  z-index: 65;
+  width: 230px;
+  padding: 0.45rem;
+  border-radius: 20px;
+  background: var(--surface-solid);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow), var(--glow);
+  display: grid;
+  gap: 0.22rem;
+  animation: rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.season-menu[hidden] { display: none; }
+
+.season-opt {
+  appearance: none;
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 13px;
+  padding: 0.48rem 0.62rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg);
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+.season-opt:hover { background: var(--accent-soft); }
+.season-opt.is-selected {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  color: var(--accent);
+}
+.season-opt .s-ico { font-size: 1.15rem; line-height: 1; flex-shrink: 0; }
+.season-opt .s-meta { display: flex; flex-direction: column; line-height: 1.2; }
+.season-opt .s-meta strong { font-size: 0.86rem; font-weight: 800; }
+.season-opt .s-meta small { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+
+.season-hero-btn {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  background: var(--accent-soft);
+  padding: 0.3rem 0.72rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.season-hero-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+@media (max-width: 640px) {
+  .season-pill-label,
+  .season-caret { display: none; }
+  .season-pill { width: 2.25rem; padding: 0; justify-content: center; }
+}
 
 .icon-btn {
   appearance: none;
