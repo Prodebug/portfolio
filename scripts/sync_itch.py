@@ -42,9 +42,19 @@ def fetch_api_games(api_key: str) -> dict[str, dict]:
     if not api_key:
         print("info: ITCH_API_KEY is not set; using public HTML fallback only.")
         return {}
-    url = "https://itch.io" + "api/1/" + api_key.strip() + "/my-games"
+    clean_key = api_key.strip()
+    url = "https://itch.io" + "api/1/" + clean_key + "/my-games"
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": UA,
+            "Accept": "application/json",
+            "Authorization": f"Bearer {clean_key}",
+        },
+    )
     try:
-        payload = fetch_json(url)
+        with urllib.request.urlopen(req, timeout=30) as r:
+            payload = json.loads(r.read().decode("utf-8", "replace"))
     except urllib.error.HTTPError as e:
         print(f"warn: itch.io API HTTP {e.code}: {e.reason}")
         return {}
@@ -59,6 +69,10 @@ def fetch_api_games(api_key: str) -> dict[str, dict]:
         gid = str(item.get("id") or "")
         if not gid:
             continue
+        views = int(item.get("views_count") or 0)
+        downloads = int(item.get("downloads_count") or 0)
+        plays = int(item.get("plays_count") or 0)
+        print(f"  api stats [{gid}] {item.get('title')}: views={views}, downloads={downloads}, plays={plays}")
         raw_url = re.sub(r"\?.*$", "", str(item.get("url") or "")).strip()
         by_id[gid] = {
             "itchId": gid,
@@ -67,8 +81,9 @@ def fetch_api_games(api_key: str) -> dict[str, dict]:
             "itchUrl": raw_url,
             "cover": item.get("cover_url") or "",
             "publishedAt": item.get("published_at") or item.get("created_at") or "",
-            "views": int(item.get("views_count") or 0),
-            "downloads": int(item.get("downloads_count") or 0),
+            "views": views,
+            "downloads": downloads,
+            "plays": plays,
             "platforms_api": [
                 name
                 for flag, name in (
@@ -82,6 +97,7 @@ def fetch_api_games(api_key: str) -> dict[str, dict]:
             "type": item.get("type") or "",
         }
     return by_id
+
 
 
 def parse_profile_games(html: str) -> list[dict]:
