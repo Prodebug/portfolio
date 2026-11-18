@@ -1,83 +1,167 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Muov — портфолио игр</title>
-  <meta name="description" content="Indie developer Muov. Platformers, worlds and stories." />
-  <meta name="theme-color" content="#050508" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
+  <title>Muov — инди-игры и миры</title>
+  <meta name="description" content="Инди-разработчик Muov. Игры, вымышленные миры, инструменты и эксперименты." />
+  <meta name="theme-color" content="#0d1310" />
+  <link rel="preconnect" href="https://googleapis.com" />
+  <link rel="preconnect" href="https://gstatic.com" crossorigin />
+  <link href="https://googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="ambient-canvas" aria-hidden="true">
+    <div class="orb orb-moss"></div>
+    <div class="orb orb-amber"></div>
+    <div class="grain"></div>
+  </div>
 
-  <header class="top">
-    <div class="top-inner">
-      <a class="brand" href="#shelf">
-        <span class="brand-mark">M</span>
-        <span class="brand-text">
+  <header class="navbar">
+    <div class="container nav-row">
+      <a class="brand" href="#top">
+        <span class="brand-emblem" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22v-7"/>
+            <path d="M12 15c-4.5 0-7-3-7-7 4 0 7 2.5 7 7Z"/>
+            <path d="M12 12c4.5 0 7-3 7-7-4 0-7 2.5-7 7Z"/>
+          </svg>
+        </span>
+        <span class="brand-meta">
           <strong id="brandName">Muov</strong>
           <small id="brandRole">инди-разработчик</small>
         </span>
       </a>
 
-      <nav class="nav" aria-label="Actions">
-        <div class="lang-switch" role="group" aria-label="Language">
-          <button type="button" class="lang-btn active" data-lang="ru" title="Русский">RU</button>
-          <button type="button" class="lang-btn" data-lang="en" title="English">EN</button>
+      <nav class="nav-actions" aria-label="Действия">
+        <a href="#featured" class="nav-link" id="navSpotlight">Главное</a>
+        <a href="#catalog" class="nav-link" id="navCatalog">Проекты</a>
+        <a href="#craft" class="nav-link" id="navCraft">Инструменты</a>
+
+        <button type="button" class="pill-icon" id="btnTheme" title="Сменить тему" aria-label="Сменить тему">
+          <span id="themeIcon">☀</span>
+        </button>
+
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="ru">RU</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
         </div>
-        <div id="adminNav" class="admin-nav" hidden>
-          <button type="button" class="btn ghost" id="btnProfile">Профиль</button>
-          <button type="button" class="btn ghost" id="btnExport">Экспорт</button>
-          <label class="btn ghost file-btn">
+
+        <div id="adminNav" class="admin-bar" hidden>
+          <button type="button" class="btn ghost sm" id="btnProfile">Профиль</button>
+          <button type="button" class="btn ghost sm" id="btnExport">Экспорт</button>
+          <label class="btn ghost sm file-btn">
             Импорт
             <input type="file" id="fileImport" accept="application/json,.json" hidden />
           </label>
-          <button type="button" class="btn primary" id="btnAdd">+ Игра</button>
-          <button type="button" class="btn ghost" id="btnLogout">Выйти</button>
+          <button type="button" class="btn primary sm" id="btnAdd">+ Проект</button>
+          <button type="button" class="btn ghost sm" id="btnLogout">Выйти</button>
         </div>
-        <button type="button" class="btn ghost" id="btnLogin">Вход</button>
+
+        <button type="button" class="btn outline sm" id="btnLogin">Вход</button>
       </nav>
     </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <p class="eyebrow" id="heroCity">itch.io</p>
-      <h1 class="display" id="heroTitle">Muov</h1>
-      <p class="lede" id="heroBio"></p>
-      <div class="hero-links" id="heroLinks"></div>
-      <div class="sync" id="syncStatus" hidden></div>
-      <p class="admin-badge" id="adminBadge" hidden></p>
+  <main id="top" class="container">
+    <!-- Bento Hero Section -->
+    <section class="bento-hero">
+      <div class="bento-card bio-box">
+        <div class="status-pill">
+          <span class="pulse-dot"></span>
+          <span id="heroCity">itch.io · открыт к идеям</span>
+        </div>
+        <h1 class="hero-title" id="heroTitle">Muov</h1>
+        <p class="hero-bio" id="heroBio"></p>
+        <div class="hero-cta" id="heroLinks"></div>
+      </div>
+
+      <div class="bento-side">
+        <div class="bento-card metrics-box" aria-label="Общая статистика">
+          <div class="metric">
+            <span class="metric-num" id="sumProjects">0</span>
+            <span class="metric-lbl" id="lblSumProjects">проектов</span>
+          </div>
+          <div class="metric">
+            <span class="metric-num" id="sumViews">0</span>
+            <span class="metric-lbl" id="lblSumViews">просмотров</span>
+          </div>
+          <div class="metric">
+            <span class="metric-num" id="sumDownloads">0</span>
+            <span class="metric-lbl" id="lblSumDownloads">скачиваний</span>
+          </div>
+        </div>
+
+        <div class="bento-card note-box">
+          <span class="note-kicker" id="noteKicker">Живая синхронизация</span>
+          <p class="note-text" id="noteText">Статистика и релизы автоматически обновляются напрямую с itch.io.</p>
+          <span class="note-date" id="syncUpdated"></span>
+        </div>
+      </div>
     </section>
 
-    <section class="shelf-wrap" id="shelf">
-      <div class="shelf-head">
-        <h2 class="section-title">Полка</h2>
-        <div class="filters" id="filters">
-          <button type="button" class="chip active" data-filter="all">Все</button>
-          <button type="button" class="chip" data-filter="released">Релиз</button>
-          <button type="button" class="chip" data-filter="wip">В работе</button>
-          <button type="button" class="chip" data-filter="jam">Джем</button>
+    <div class="sync-toast" id="syncStatus" hidden></div>
+    <p class="admin-banner" id="adminBadge" hidden></p>
+
+    <!-- Spotlight Featured Project -->
+    <section class="spotlight-wrap" id="featured" hidden>
+      <div class="section-label" id="lblSpotlight">В центре внимания</div>
+      <div class="spotlight-card" id="spotlightHost"></div>
+    </section>
+
+    <!-- Full Catalog -->
+    <section class="catalog-wrap" id="catalog">
+      <div class="catalog-bar">
+        <div class="catalog-title-group">
+          <h2 class="section-heading" id="lblCatalog">Все проекты</h2>
+          <span class="count-badge" id="visibleCount">0</span>
         </div>
-        <input type="search" class="search" id="search" placeholder="Поиск…" autocomplete="off" />
+
+        <div class="catalog-controls">
+          <div class="filter-pills" id="filters">
+            <button type="button" class="pill active" data-filter="all">Все</button>
+            <button type="button" class="pill" data-filter="released">Релиз</button>
+            <button type="button" class="pill" data-filter="wip">В работе</button>
+            <button type="button" class="pill" data-filter="jam">Джем</button>
+          </div>
+          <input type="search" class="search-field" id="search" placeholder="Найти игру или утилиту…" autocomplete="off" />
+        </div>
       </div>
-      <div class="grid" id="grid" role="list"></div>
-      <p class="empty" id="empty" hidden>Игр пока нет.</p>
+
+      <div class="cards-grid" id="grid" role="list"></div>
+      <p class="empty-box" id="empty" hidden>Ничего не найдено.</p>
+    </section>
+
+    <!-- Craft & Stack Section -->
+    <section class="craft-wrap" id="craft">
+      <div class="craft-card">
+        <div class="craft-info">
+          <span class="section-label" id="lblCraft">Подход и инструменты</span>
+          <h2 class="craft-heading" id="craftHeading">Создаю атмосферные миры, пиксельную графику и удобные утилиты</h2>
+          <p class="craft-desc" id="craftDesc">От прототипов для геймджемов до законченных инди-релизов и инструментов для разработчиков.</p>
+        </div>
+        <div class="craft-tags">
+          <span class="craft-tag">Godot Engine</span>
+          <span class="craft-tag">Aseprite</span>
+          <span class="craft-tag">Pixel Art</span>
+          <span class="craft-tag">Python</span>
+          <span class="craft-tag">Web / HTML5</span>
+          <span class="craft-tag">Game Design</span>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer class="foot">
-    <p>
-      <a href="https://muov.itch.io/" target="_blank" rel="noopener">muov.itch.io</a>
-      · GitHub Pages
-    </p>
+  <footer class="site-footer">
+    <div class="container footer-row">
+      <p id="footerText">
+        Данные с <a href="https://itch.io" target="_blank" rel="noopener">muov.itch.io</a> · автообновление через itch.io API
+      </p>
+      <a href="#top" class="back-top" id="backTop">Наверх ↑</a>
+    </div>
   </footer>
 
-  <!-- hidden giscus config for per-game comments (no site-wide widget) -->
   <script type="application/json" id="giscusConfig">
   {
     "repo": "Prodebug/portfolio",
@@ -87,11 +171,11 @@
   }
   </script>
 
-  <dialog class="sheet" id="dialog">
-    <div class="sheet-body" id="dialogBody"></div>
+  <dialog class="modal-sheet" id="dialog">
+    <div class="modal-body" id="dialogBody"></div>
   </dialog>
 
-  <div class="drop-veil" id="dropVeil" hidden>
+  <div class="drop-overlay" id="dropVeil" hidden>
     <p>Отпусти JSON — импортирую портфолио</p>
   </div>
 
