@@ -9,6 +9,7 @@ import re
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -24,13 +25,114 @@ def fetch_text(url: str) -> str:
         return r.read().decode("utf-8", "replace")
 
 
+def unescape_deep(text: str) -> str:
+    for _ in range(3):
+        decoded = html_lib.unescape(text)
+        if decoded == text:
+            break
+        text = decoded
+    return text
+
+
 def clean_text(raw: str) -> str:
     if not raw:
         return ""
     text = re.sub(r"<[^>]+>", " ", raw)
-    text = html_lib.unescape(text)
+    text = unescape_deep(text)
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
     text = re.sub(r"[ \t]+", " ", text)
     return text.strip()
+
+
+class _FormattedDescriptionParser(HTMLParser):
+    """Extract clean prose and bullet items inside itch.io .formatted_description."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self.capturing = False
+        self.div_depth = 0
+        self.skip_depth = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attr_map = dict(attrs)
+        cls = attr_map.get("class") or ""
+        if not self.capturing:
+            if tag == "div" and "formatted_description" in cls.split():
+                self.capturing = True
+                self.div_depth = 1
+            return
+        if tag == "div":
+            self.div_depth += 1
+        elif tag in ("script", "style"):
+            self.skip_depth += 1
+        elif self.skip_depth == 0:
+            if tag == "br":
+                self.parts.append("\n")
+            elif tag == "li":
+                self.parts.append("\n• ")
+            elif tag in ("p", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"):
+                self.parts.append("\n\n")
+
+    def handle_endtag(self, tag: str) -> None:
+        if not self.capturing:
+            return
+        if tag in ("script", "style") and self.skip_depth > 0:
+            self.skip_depth -= 1
+            return
+        if tag == "div":
+            self.div_depth -= 1
+            if self.div_depth <= 0:
+                self.capturing = False
+        elif self.skip_depth == 0 and tag in ("p", "ul", "ol", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"):
+            self.parts.append("\n\n")
+
+    def handle_data(self, data: str) -> None:
+        if self.capturing and self.skip_depth == 0:
+            self.parts.append(data)
+
+    def handle_entityref(self, name: str) -> None:
+        if self.capturing and self.skip_depth == 0:
+            self.parts.append(f"&{name};")
+
+    def handle_charref(self, name: str) -> None:
+        if self.capturing and self.skip_depth == 0:
+            self.parts.append(f"&#{name};")
+
+    def get_text(self) -> str:
+        raw = unescape_deep("".join(self.parts))
+        raw = raw.replace("\r\n", "\n").replace("\r", "\n")
+        lines = [re.sub(r"[ \t]+", " ", line).strip() for line in raw.split("\n")]
+        cleaned_lines: list[str] = []
+        blank_run = 0
+        for line in lines:
+            if not line:
+                blank_run += 1
+                if blank_run <= 1 and cleaned_lines:
+                    cleaned_lines.append("")
+            else:
+                blank_run = 0
+                cleaned_lines.append(line)
+        return "\n".join(cleaned_lines).strip()
+
+
+def extract_formatted_description(html: str) -> str:
+    parser = _FormattedDescriptionParser()
+    parser.feed(html)
+    parser.close()
+    text = parser.get_text()
+    if text:
+        return text
+    # Fallback scoped strictly before comments widget
+    main_html = re.split(r'class="[^"]*\bgame_comments_widget\b', html, maxsplit=1)[0]
+    paras = re.findall(r"<p>([\s\S]{10,600}?)</p>", main_html)
+    skip = ("download", "click button", "install", "log in with itch.io")
+    desc_parts = []
+    for p in paras:
+        cleaned = clean_text(p)
+        if len(cleaned) >= 8 and not any(s in cleaned.lower() for s in skip):
+            desc_parts.append(cleaned)
+    return "\n\n".join(desc_parts[:7])
 
 
 def fetch_api_games(api_key: str) -> dict[str, dict]:
@@ -141,52 +243,55 @@ def enrich_game(url: str) -> dict:
         return {}
     info: dict = {}
 
-    h1_m = re.search(r'<h1[^>]*class="game_title"[^>]*>([^<]+)</h1>', html, re.I)
+    # Isolate main game column (exclude comments & related games sidebar/footer)
+    main_html = re.split(r'class="[^"]*\bgame_comments_widget\b', html, maxsplit=1)[0]
+    info_panel_m = re.search(
+        r'class="[^"]*\bgame_info_panel_widget\b[\s\S]{0,6000}', main_html
+    )
+    info_html = info_panel_m.group(0) if info_panel_m else main_html
+
+    h1_m = re.search(r'<h1[^>]*class="[^"]*\bgame_title\b[^"]*"[^>]*>([^<]+)</h1>', main_html, re.I)
     if h1_m:
         info["title"] = clean_text(h1_m.group(1))
 
-    paras = re.findall(r"<p>([\s\S]{10,600}?)</p>", html)
-    skip = ("download", "click button", "install", "log in with itch.io")
-    desc_parts = []
-    for p in paras:
-        cleaned = clean_text(p)
-        if len(cleaned) >= 8 and not any(s in cleaned.lower() for s in skip):
-            desc_parts.append(cleaned)
-    if desc_parts:
-        info["description"] = "\n\n".join(desc_parts[:7])
+    desc = extract_formatted_description(main_html)
+    if desc:
+        info["description"] = desc
 
-    genres = re.findall(r"itch\.io/games/genre-([a-z0-9-]+)", html)
+    genres = re.findall(r"itch\.io/games/genre-([a-z0-9-]+)", info_html)
     if genres:
         info["genres"] = [g.replace("-", " ").title() for g in dict.fromkeys(genres)]
 
-    tags = re.findall(r"itch\.io/games/tag-([a-z0-9-]+)", html)
+    tags = re.findall(r"itch\.io/games/tag-([a-z0-9-]+)", info_html)
     if tags:
         info["tags"] = [t.replace("-", " ").title() for t in dict.fromkeys(tags)][:6]
 
     platforms = []
-    if "platform-windows" in html or ">Windows<" in html:
+    if "platform-windows" in info_html or ">Windows<" in info_html:
         platforms.append("Windows")
-    if "platform-osx" in html or "platform-mac" in html or ">macOS<" in html:
+    if "platform-osx" in info_html or "platform-mac" in info_html or ">macOS<" in info_html:
         platforms.append("macOS")
-    if "platform-linux" in html or ">Linux<" in html:
+    if "platform-linux" in info_html or ">Linux<" in info_html:
         platforms.append("Linux")
-    if "platform-android" in html or ">Android<" in html:
+    if "platform-android" in info_html or ">Android<" in info_html:
         platforms.append("Android")
-    if "HTML5" in html or "platform-web" in html or "html_embed" in html or "Run game" in html:
+    if "HTML5" in info_html or "platform-web" in info_html or "html_embed" in main_html or "Run game" in main_html:
         platforms.append("Web")
     if platforms:
         info["platforms"] = list(dict.fromkeys(platforms))
 
-    if "Submission to" in html and "Jam" in html:
+    if "Submission to" in main_html and "Jam" in main_html:
         info["status"] = "jam"
-    elif re.search(r">\s*Released\s*<", html) or "games/released" in html:
+    elif re.search(r">\s*Released\s*<", info_html) or "games/released" in info_html:
         info["status"] = "released"
-    elif "In development" in html:
+    elif "In development" in info_html:
         info["status"] = "wip"
-    elif "Prototype" in html:
+    elif "Prototype" in info_html:
         info["status"] = "prototype"
 
-    ym = re.search(r"(\d{4})-\d{2}-\d{2}", html)
+    ym = re.search(r'<abbr[^>]+title="(\d{4})-\d{2}-\d{2}', info_html) or re.search(
+        r"(\d{4})-\d{2}-\d{2}", info_html
+    )
     if ym:
         try:
             info["year"] = int(ym.group(1))
@@ -194,18 +299,25 @@ def enrich_game(url: str) -> dict:
             pass
 
     shots = re.findall(
-        r'(https://img\.itch\.zone/aW1hZ2Uv[^"\s]+/original/[^"\s]+)', html
+        r'(https://img\.itch\.zone/aW1hZ2Uv[^"\'\s<>]+/original/[^"\'\s<>]+)', main_html
     )
     if shots:
         info["shots"] = list(dict.fromkeys(shots))[:4]
 
+    og_m = re.search(
+        r'<meta[^>]+property="og:image"[^>]+content="(https://img\.itch\.zone/[^"\'\s<>]+)"',
+        html,
+        re.I,
+    )
     cm = re.search(
-        r'(https://img\.itch\.zone/aW1nLz[^"\s]+/original/[^"\s]+)', html
+        r'(https://img\.itch\.zone/aW1nLz[^"\'\s<>]+/original/[^"\'\s<>]+)', main_html
     )
     if cm:
         info["cover"] = cm.group(1)
+    elif og_m:
+        info["cover"] = og_m.group(1)
 
-    rm = re.search(r"Rated\s*([\d.]+)\s*out of\s*5", html, re.I)
+    rm = re.search(r"Rated\s*([\d.]+)\s*out of\s*5", info_html, re.I)
     if rm:
         try:
             info["rating"] = float(rm.group(1))
@@ -229,7 +341,7 @@ def merge(existing: dict, scraped: list[dict], api_by_id: dict[str, dict]) -> di
         "bioEn": "I create indie games, build fictional worlds and write stories.",
         "links": [
             {"label": "itch.io", "url": ITCH_USER},
-            {"label": "Discord", "url": "https://discord.gg"},
+            {"label": "Discord", "url": "https://discord.gg/8GpzEHQqG3"},
         ],
     }
     old_games = list(existing.get("games") or [])
@@ -302,6 +414,8 @@ def merge(existing: dict, scraped: list[dict], api_by_id: dict[str, dict]) -> di
                 not (old.get("description") or "").strip() or "ХЭЛЛОУИН" in old.get("description", "")
             ):
                 game["description"] = extra["description"]
+            elif game.get("description"):
+                game["description"] = unescape_deep(str(game["description"])).replace("\r\n", "\n")
             game["stats"] = stats
             merged.append(game)
             seen_ids.add(game.get("id") or gid_str)
