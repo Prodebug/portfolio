@@ -1,140 +1,74 @@
 (() => {
-  const STORAGE_KEY = "muov-portfolio-v1";
+  const STORAGE_KEY = "muov-portfolio-v3";
   const SESSION_KEY = "muov-admin-session";
   const CREDS_KEY = "muov-admin-creds";
   const LANG_KEY = "muov-lang";
+  const THEME_KEY = "muov-theme";
 
   const DEFAULT_USER = "muov";
   const DEFAULT_PASS_HASH =
     "d43874f677a1e18e57eecd731480fae08dad046dcc2406cad3617c1434e4576d";
 
-  const SEED = {
-  "profile": {
-    "name": "Muov",
-    "role": "инди-разработчик",
-    "city": "itch.io",
-    "bio": "Создаю инди-игры, выстраиваю вымышленные миры и пишу истории. Платформеры и эксперименты с механиками.",
-    "links": [
-      {
-        "label": "itch.io",
-        "url": "https://muov.itch.io/"
-      },
-      {
-        "label": "Discord",
-        "url": "https://discord.gg/8GpzEHQqG3"
-      },
-      {
-        "label": "Hexagonia",
-        "url": "https://muov.itch.io/hexagonia"
-      }
-    ],
-    "roleEn": "indie developer",
-    "bioEn": "I create indie games, build fictional worlds and write stories. Platformers and experiments with mechanics."
-  },
-  "games": [
-    {
-      "id": "glance-up-halloween-edition",
-      "title": "Glance Up: Halloween Edition",
-      "tagline": "",
-      "year": 2026,
-      "role": "разработка",
-      "status": "released",
-      "genres": [
-        "Platformer"
+  const FALLBACK_DATA = {
+    profile: {
+      name: "Muov",
+      role: "инди-разработчик",
+      roleEn: "indie developer",
+      city: "itch.io · открыт к идеям",
+      bio: "Создаю инди-игры, выстраиваю вымышленные миры и пишу истории. Платформеры, инструменты и эксперименты с механиками.",
+      bioEn:
+        "I create indie games, build fictional worlds and write stories. Platformers, tools and experiments with mechanics.",
+      links: [
+        { label: "itch.io", url: "https://itch.io" },
+        { label: "Discord", url: "https://discord.gg" },
       ],
-      "platforms": [
-        "Windows",
-        "Android",
-        "Web"
-      ],
-      "description": "🎃 ХЭЛЛОУИНСКИЙ ИВЕНТ УЖЕ В ИГРЕ! 🎃\n\nGlance Up &mdash; пиксельный платформер-бесконечный прыгун. Прыгай по платформам всё выше, уворачивайся от деревьев-монстров и собирай монеты.\n\nВ Хэллоуинском режиме:\n\n• Фиолетовое небо и красная луна\n\n• Конфеты, которые падают на платформах\n\n• Новый персонаж &mdash; Тыквенный Дух (30 конфет): парение, двойной прыжок и призрачный щит",
-      "cover": "https://img.itch.zone/aW1nLzMxNDUzMDUyLnBuZw==/original/pJ2EMu.png",
-      "shots": [
-        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTQ1MzA5NC5wbmc=/original/dbhEC9.png",
-        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTQ1MzEwNS5wbmc=/original/QPch7I.png",
-        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTQ1MzE2Mi5wbmc=/original/XJ8tcR.png",
-        "https://img.itch.zone/aW1hZ2UvNTI0NTU5MC8zMTQ1MzE5NC5wbmc=/original/j62g02.png"
-      ],
-      "playUrl": "https://muov.itch.io/glance-up-halloween-edition",
-      "trailerUrl": "",
-      "repoUrl": "",
-      "featured": true,
-      "tags": [],
-      "itchId": "5245590",
-      "itchUrl": "https://muov.itch.io/glance-up-halloween-edition"
     },
-    {
-      "id": "hexagonia",
-      "title": "Hexagonia",
-      "tagline": "Платформер с Godot · GMTK Game Jam 2026",
-      "year": 2026,
-      "role": "разработка",
-      "status": "jam",
-      "genres": [
-        "Platformer",
-        "Adventure"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "description": "Hello, dear players! We are a newly formed team, and we are still learning the ropes.\n\nWe decided to create a game and participate in Game Jam 2026.\n\nWe used Aseprite, Canva, and Godot.\n\nThank you for playing our game.",
-      "cover": "covers/hexagonia.jpg",
-      "shots": [
-        "https://img.itch.zone/aW1hZ2UvNDgyMDkxNS8yODc0NjQ4NS5wbmc=/original/UFDXEn.png",
-        "https://img.itch.zone/aW1hZ2UvNDgyMDkxNS8yODc0NjQ4Ni5wbmc=/original/lRgZax.png",
-        "https://img.itch.zone/aW1hZ2UvNDgyMDkxNS8yODc0NjQ4Ny5wbmc=/original/5ZWky3.png",
-        "https://img.itch.zone/aW1hZ2UvNDgyMDkxNS8yODc0NzMwOS5wbmc=/original/dG69cq.png"
-      ],
-      "playUrl": "https://muov.itch.io/hexagonia",
-      "trailerUrl": "",
-      "repoUrl": "",
-      "featured": false,
-      "tags": [
-        "2D",
-        "Godot",
-        "Pixel Art",
-        "Story Rich",
-        "No AI"
-      ],
-      "itchId": "4820915",
-      "itchUrl": "https://muov.itch.io/hexagonia"
-    }
-  ],
-  "updatedAt": "2026-10-27T22:00:15Z"
-}
-;
+    games: [],
+  };
 
   const I18N = {
     ru: {
       roleDefault: "инди-разработчик",
+      navSpotlight: "Главное",
+      navCatalog: "Проекты",
+      navCraft: "Инструменты",
       profile: "Профиль",
       export: "Экспорт",
       import: "Импорт",
-      addGame: "+ Игра",
+      addGame: "+ Проект",
       logout: "Выйти",
       login: "Вход",
       loginTitle: "Вход для владельца",
-      shelf: "Полка",
+      lblSpotlight: "В центре внимания",
+      lblCatalog: "Все проекты",
+      lblCraft: "Подход и инструменты",
+      craftHeading: "Создаю атмосферные миры, пиксельную графику и удобные утилиты",
+      craftDesc: "От прототипов для геймджемов до законченных инди-релизов и инструментов для разработчиков.",
+      noteKicker: "Живая синхронизация",
+      noteText: "Статистика и релизы автоматически обновляются напрямую с itch.io.",
+      updatedPrefix: "Обновлено: ",
+      backTop: "Наверх ↑",
       all: "Все",
       released: "Релиз",
       wip: "В работе",
       jam: "Джем",
       prototype: "Прототип",
-      search: "Поиск по названию…",
-      empty: "Игр пока нет.",
+      search: "Найти игру или утилиту…",
+      empty: "Ничего не найдено.",
       foot: "Данные с",
-      footSync: "синхронизация через GitHub Actions",
+      footSync: "автообновление через itch.io API",
       adminBadge:
-        "Режим админа — правки локально; чтобы обновить сайт для всех — Экспорт → commit в GitHub",
+        "Режим владельца — правки локально; чтобы опубликовать для всех — Экспорт → commit в GitHub",
       drop: "Отпусти JSON — импортирую портфолио",
       close: "Закрыть",
       edit: "Править",
       delete: "Удалить",
-      play: "Играть / itch",
+      play: "Открыть / Играть",
+      details: "Подробнее",
       trailer: "Трейлер",
       repo: "Репозиторий",
       noDesc: "Описание пока не добавлено.",
-      newGame: "Новая игра",
+      newGame: "Новый проект",
       editing: "Редактирование",
       title: "Название",
       tagline: "Слоган",
@@ -144,12 +78,12 @@
       genres: "Жанры (через запятую)",
       platforms: "Платформы (через запятую)",
       description: "Описание",
-      playUrl: "Ссылка на itch / play",
+      playUrl: "Ссылка на itch / проект",
       trailerUrl: "Трейлер URL",
       repoUrl: "Репозиторий",
       cover: "Обложка",
       shots: "Скриншоты (до 4)",
-      featured: "Избранная (широкая карточка)",
+      featured: "Главный проект (блок «В центре внимания»)",
       cancel: "Отмена",
       save: "Сохранить",
       ownerLogin: "Вход владельца",
@@ -174,7 +108,7 @@
       passShort: "Минимум 6 символов",
       passUpdated: "Логин и пароль обновлены на этом устройстве",
       name: "Имя",
-      city: "Город / подпись",
+      city: "Статус / подпись",
       about: "О себе",
       links: "Ссылки (по одной на строку: Подпись | URL)",
       resetPublished: "Сбросить к published",
@@ -188,49 +122,62 @@
       coverFail: "Не удалось обработать обложку",
       shotsFail: "Не удалось обработать скриншоты",
       navLabel: "Действия",
-      pageTitle: "Muov — портфолио игр",
-      comments: "Комментарии",
-      commentsHint:
-        "Общий чат. Чтобы обсудить игру — открой её карточку, комментарии внизу окна.",
-      gameComments: "Комментарии к этой игре",
-      gameCommentsHint: "Войди через GitHub, чтобы написать комментарий",
+      pageTitle: "Muov — инди-игры и миры",
+      gameComments: "Комментарии к проекту",
+      gameCommentsHint: "Войди через GitHub, чтобы оставить отзыв",
       downloads: "скачиваний",
       views: "просмотров",
       plays: "запусков",
       rating: "оценка",
       siteViews: "на сайте",
+      sumProjects: "проектов",
+      sumViews: "просмотров",
+      sumDownloads: "скачиваний",
+      themeTitle: "Сменить природную тему",
     },
     en: {
       roleDefault: "indie developer",
+      navSpotlight: "Spotlight",
+      navCatalog: "Projects",
+      navCraft: "Tools",
       profile: "Profile",
       export: "Export",
       import: "Import",
-      addGame: "+ Game",
+      addGame: "+ Project",
       logout: "Log out",
       login: "Log in",
       loginTitle: "Owner login",
-      shelf: "Shelf",
+      lblSpotlight: "Spotlight",
+      lblCatalog: "All projects",
+      lblCraft: "Craft & Tools",
+      craftHeading: "Building atmospheric worlds, pixel art and handy developer tools",
+      craftDesc: "From game jam prototypes to polished indie releases and utility software.",
+      noteKicker: "Live Sync",
+      noteText: "Stats and releases are automatically synced directly from itch.io.",
+      updatedPrefix: "Updated: ",
+      backTop: "Back to top ↑",
       all: "All",
       released: "Released",
       wip: "In progress",
       jam: "Jam",
       prototype: "Prototype",
-      search: "Search by title…",
-      empty: "No games yet.",
+      search: "Search game or tool…",
+      empty: "Nothing found.",
       foot: "Data from",
-      footSync: "synced via GitHub Actions",
+      footSync: "auto-synced via itch.io API",
       adminBadge:
-        "Admin mode — edits are local; Export → commit to GitHub to update the public site",
+        "Owner mode — edits are local; Export → commit to GitHub to publish for everyone",
       drop: "Drop JSON to import portfolio",
       close: "Close",
       edit: "Edit",
       delete: "Delete",
-      play: "Play / itch",
+      play: "Open / Play",
+      details: "Details",
       trailer: "Trailer",
       repo: "Repository",
       noDesc: "No description yet.",
-      newGame: "New game",
-      editing: "Edit game",
+      newGame: "New project",
+      editing: "Edit project",
       title: "Title",
       tagline: "Tagline",
       year: "Year",
@@ -239,12 +186,12 @@
       genres: "Genres (comma-separated)",
       platforms: "Platforms (comma-separated)",
       description: "Description",
-      playUrl: "itch / play URL",
+      playUrl: "itch / project URL",
       trailerUrl: "Trailer URL",
       repoUrl: "Repository",
       cover: "Cover",
       shots: "Screenshots (up to 4)",
-      featured: "Featured (wide card)",
+      featured: "Spotlight project (featured banner)",
       cancel: "Cancel",
       save: "Save",
       ownerLogin: "Owner login",
@@ -269,7 +216,7 @@
       passShort: "At least 6 characters",
       passUpdated: "Username and password updated on this device",
       name: "Name",
-      city: "City / label",
+      city: "Status / label",
       about: "About",
       links: "Links (one per line: Label | URL)",
       resetPublished: "Reset to published",
@@ -283,29 +230,46 @@
       coverFail: "Could not process cover",
       shotsFail: "Could not process screenshots",
       navLabel: "Actions",
-      pageTitle: "Muov — game portfolio",
-      comments: "Comments",
-      commentsHint:
-        "General discussion. To comment on a game — open its card; comments are at the bottom.",
-      gameComments: "Comments on this game",
+      pageTitle: "Muov — indie games & worlds",
+      gameComments: "Project comments",
       gameCommentsHint: "Sign in with GitHub to leave a comment",
       downloads: "downloads",
       views: "views",
       plays: "plays",
       rating: "rating",
       siteViews: "on site",
+      sumProjects: "projects",
+      sumViews: "views",
+      sumDownloads: "downloads",
+      themeTitle: "Switch nature theme",
     },
   };
 
-  let lang = localStorage.getItem(LANG_KEY) || "ru";
-  if (lang !== "ru" && lang !== "en") lang = "ru";
+  let lang = localStorage.getItem(LANG_KEY) === "en" ? "en" : "ru";
+  let theme = localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
 
   function t(key) {
     const pack = I18N[lang] || I18N.ru;
     return pack[key] ?? I18N.ru[key] ?? key;
   }
 
-  function statusLabel(status) {
+  function applyTheme(nextTheme) {
+    theme = nextTheme === "light" ? "light" : "dark";
+    localStorage.setItem(THEME_KEY, theme);
+    document.documentElement.setAttribute("data-theme", theme);
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute("content", theme === "light" ? "#f4f1ea" : "#0c110e");
+    const icon = document.getElementById("themeIcon");
+    if (icon) icon.textContent = theme === "light" ? "☾" : "☀";
+    document.querySelectorAll("iframe.giscus-frame").forEach((iframe) => {
+      try {
+        iframe.contentWindow.postMessage({ giscus: { setConfig: { theme: theme === "light" ? "light" : "transparent_dark" } } },
+"https://giscus.app");
+} catch (_) {}
+});
+}
+
+   function statusLabel(status) {
     return (
       { released: t("released"), wip: t("wip"), jam: t("jam"), prototype: t("prototype") }[
         status
@@ -316,7 +280,7 @@
   }
 
   function formatNum(n) {
-    if (typeof n !== "number" || !isFinite(n)) return null;
+    if (typeof n !== "number" || !isFinite(n)) return "0";
     if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
     if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
     return String(Math.round(n));
@@ -326,21 +290,21 @@
     const s = stats && typeof stats === "object" ? stats : {};
     const items = [];
     const push = (key, icon, label) => {
-      let n = s[key];
-      if (n == null || n === "" || !isFinite(Number(n))) n = 0;
-      else n = Number(n);
-      if (n < 0) n = 0;
+      let n = Number(s[key]);
+      if (!isFinite(n) || n < 0) n = 0;
       items.push(
         `<span class="stat-pill" title="${esc(label)}"><i>${icon}</i><b>${esc(
           formatNum(n)
         )}</b>${compact ? "" : ` <em>${esc(label)}</em>`}</span>`
       );
     };
-    push("downloads", "↓", t("downloads"));
     push("views", "👁", t("views"));
-    push("plays", "▶", t("plays"));
+    push("downloads", "↓", t("downloads"));
+    if (Number(s.plays) > 0 && Number(s.plays) !== Number(s.views)) {
+      push("plays", "▶", t("plays"));
+    }
     push("siteViews", "🌐", t("siteViews"));
-    if (typeof s.rating === "number" && isFinite(s.rating)) {
+    if (typeof s.rating === "number" && isFinite(s.rating) && s.rating > 0) {
       items.push(
         `<span class="stat-pill" title="${esc(t("rating"))}"><i>★</i><b>${esc(
           String(s.rating)
@@ -348,6 +312,20 @@
       );
     }
     return `<div class="stats-row">${items.join("")}</div>`;
+  }
+
+  function updateSummaryTotals() {
+    const games = state?.games || [];
+    let totalViews = 0;
+    let totalDownloads = 0;
+    for (const g of games) {
+      const st = g.stats || {};
+      totalViews += Math.max(0, Number(st.views) || 0);
+      totalDownloads += Math.max(0, Number(st.downloads) || 0);
+    }
+    if ($("sumProjects")) $("sumProjects").textContent = formatNum(games.length);
+    if ($("sumViews")) $("sumViews").textContent = formatNum(totalViews);
+    if ($("sumDownloads")) $("sumDownloads").textContent = formatNum(totalDownloads);
   }
 
   function counterKey(gameId) {
@@ -358,14 +336,13 @@
     try {
       const key = counterKey(gameId);
       const res = await fetch(
-        `https://abacus.jasoncameron.dev/get/muov-portfolio/${encodeURIComponent(key)}`,
+        `https://jasoncameron.dev{encodeURIComponent(key)}`,
         { cache: "no-store" }
       );
       if (!res.ok) return 0;
       const data = await res.json();
       if (data && data.error) return 0;
-      const value = data?.value;
-      return typeof value === "number" ? value : 0;
+      return typeof data?.value === "number" ? data.value : 0;
     } catch (_) {
       return 0;
     }
@@ -375,13 +352,12 @@
     try {
       const key = counterKey(gameId);
       const res = await fetch(
-        `https://abacus.jasoncameron.dev/hit/muov-portfolio/${encodeURIComponent(key)}`,
+        `https://jasoncameron.dev{encodeURIComponent(key)}`,
         { cache: "no-store" }
       );
       if (!res.ok) return null;
       const data = await res.json();
-      const value = data?.value;
-      return typeof value === "number" ? value : null;
+      return typeof data?.value === "number" ? data.value : null;
     } catch (_) {
       return null;
     }
@@ -396,13 +372,12 @@
         g.stats.siteViews = typeof n === "number" ? n : 0;
       })
     );
+    renderSpotlight();
     renderGrid();
   }
 
-
-
-  let published = structuredClone(SEED);
-  let state = structuredClone(SEED);
+  let published = structuredClone(FALLBACK_DATA);
+  let state = structuredClone(FALLBACK_DATA);
   let isAdmin = false;
   let filter = "all";
   let query = "";
@@ -589,7 +564,7 @@
     container.appendChild(wrap);
     const cfg = giscusBaseAttrs();
     const script = document.createElement("script");
-    script.src = "https://giscus.app/client.js";
+    script.src = "https://giscus.app";
     script.async = true;
     script.crossOrigin = "anonymous";
     script.setAttribute("data-repo", cfg.repo);
@@ -602,26 +577,44 @@
     script.setAttribute("data-reactions-enabled", "1");
     script.setAttribute("data-emit-metadata", "0");
     script.setAttribute("data-input-position", "top");
-    script.setAttribute("data-theme", "transparent_dark");
+    script.setAttribute("data-theme", theme === "light" ? "light" : "transparent_dark");
     script.setAttribute("data-lang", lang === "en" ? "en" : "ru");
     wrap.appendChild(script);
   }
-
   function applyStaticI18n() {
     document.documentElement.lang = lang;
     document.title = t("pageTitle");
-    const nav = document.querySelector(".nav");
+    const nav = document.querySelector(".nav-actions");
     if (nav) nav.setAttribute("aria-label", t("navLabel"));
 
     const setTxt = (id, key) => {
       const el = $(id);
       if (el) el.textContent = t(key);
     };
+    setTxt("navSpotlight", "navSpotlight");
+    setTxt("navCatalog", "navCatalog");
+    setTxt("navCraft", "navCraft");
     setTxt("btnProfile", "profile");
     setTxt("btnExport", "export");
     setTxt("btnAdd", "addGame");
     setTxt("btnLogout", "logout");
     setTxt("btnLogin", "login");
+    setTxt("lblSpotlight", "lblSpotlight");
+    setTxt("lblCatalog", "lblCatalog");
+    setTxt("lblCraft", "lblCraft");
+    setTxt("craftHeading", "craftHeading");
+    setTxt("craftDesc", "craftDesc");
+    setTxt("noteKicker", "noteKicker");
+    setTxt("noteText", "noteText");
+    setTxt("backTop", "backTop");
+    setTxt("lblSumProjects", "sumProjects");
+    setTxt("lblSumViews", "sumViews");
+    setTxt("lblSumDownloads", "sumDownloads");
+
+    if ($("btnTheme")) {
+      $("btnTheme").title = t("themeTitle");
+      $("btnTheme").setAttribute("aria-label", t("themeTitle"));
+    }
 
     const fileLabel = document.querySelector(".file-btn");
     if (fileLabel) {
@@ -633,9 +626,7 @@
     }
 
     if ($("btnLogin")) $("btnLogin").title = t("loginTitle");
-    const section = document.querySelector(".section-title");
-    if (section) section.textContent = t("shelf");
-    document.querySelectorAll("#filters .chip").forEach((chip) => {
+    document.querySelectorAll("#filters .pill").forEach((chip) => {
       const f = chip.getAttribute("data-filter");
       if (f === "all") chip.textContent = t("all");
       if (f === "released") chip.textContent = t("released");
@@ -647,18 +638,30 @@
     if ($("adminBadge")) $("adminBadge").textContent = t("adminBadge");
     const dropP = dropVeil?.querySelector("p");
     if (dropP) dropP.textContent = t("drop");
-    const foot = document.querySelector(".foot p");
+
+    const updatedEl = $("syncUpdated");
+    if (updatedEl) {
+      updatedEl.textContent = state?.updatedAt
+        ? t("updatedPrefix") +
+          new Date(state.updatedAt).toLocaleString(lang === "en" ? "en-US" : "ru-RU", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          })
+        : "";
+    }
+
+    const foot = $("footerText");
     if (foot) {
       foot.innerHTML =
         t("foot") +
-        ' <a href="https://muov.itch.io/" target="_blank" rel="noopener">muov.itch.io</a> · ' +
+        ' <a href="https://' +
+        "muov" +
+        '.itch.io/" target="_blank" rel="noopener">muov.itch.io</a> · ' +
         t("footSync");
     }
     document.querySelectorAll(".lang-btn").forEach((b) => {
       b.classList.toggle("active", b.dataset.lang === lang);
     });
-    if ($("commentsTitle")) $("commentsTitle").textContent = t("comments");
-    if ($("commentsHint")) $("commentsHint").textContent = t("commentsHint");
     setGiscusLang(lang);
   }
 
@@ -691,7 +694,7 @@
     $("brandRole").textContent = profileRole(p);
     $("heroTitle").textContent = p.name || "Muov";
     $("heroBio").textContent = profileBio(p);
-    $("heroCity").textContent = p.city || "itch.io";
+    $("heroCity").textContent = p.city || "itch.io · открыт к идеям";
     $("heroLinks").innerHTML = (p.links || [])
       .filter((l) => safeUrl(l.url))
       .map(
@@ -701,15 +704,55 @@
           )}</a>`
       )
       .join("");
+    updateSummaryTotals();
+  }
+
+  function renderSpotlight() {
+    const section = $("featured");
+    const host = $("spotlightHost");
+    if (!section || !host) return;
+    const games = state?.games || [];
+    const spot = games.find((g) => g.featured) || games[0];
+    if (!spot) {
+      section.hidden = true;
+      return;
+    }
+    section.hidden = false;
+    const play = safeUrl(spot.playUrl);
+    const stamp = statusLabel(spot.status);
+    const cover = spot.cover
+      ? `<img src="${esc(spot.cover)}" alt="${esc(spot.title)}" loading="lazy" onerror="this.style.display='none'" />`
+      : `<div class="poster-fallback">${esc((spot.title || "?").slice(0, 1))}</div>`;
+    const tags = [];
+    if (spot.year) tags.push(`<span>${esc(spot.year)}</span>`);
+    (spot.genres || []).slice(0, 3).forEach((x) => tags.push(`<span>${esc(x)}</span>`));
+    (spot.platforms || []).slice(0, 3).forEach((x) => tags.push(`<span>${esc(x)}</span>`));
+
+    host.innerHTML = `
+      <div class="spotlight-media">
+        ${cover}
+        ${spot.status ? `<span class="status-tag ${esc(spot.status)}">${esc(stamp)}</span>` : ""}
+      </div>
+      <div class="spotlight-info">
+        <h2 class="spotlight-title">${esc(spot.title)}</h2>
+        <p class="spotlight-desc">${esc(spot.tagline || spot.description || t("noDesc"))}</p>
+        <div class="tags-row" style="margin-top:0;padding-top:0">${tags.join("")}</div>
+        ${formatStats(spot.stats, false)}
+        <div class="spotlight-actions">
+          ${play ? `<a class="btn primary" href="${esc(play)}" target="_blank" rel="noopener">${esc(t("play"))}</a>` : ""}
+          <button type="button" class="btn outline" data-open="${esc(spot.id)}">${esc(t("details"))}</button>
+        </div>
+      </div>`;
   }
 
   function renderGrid() {
     const list = visibleGames();
+    if ($("visibleCount")) $("visibleCount").textContent = String(list.length);
     grid.innerHTML = "";
     empty.hidden = list.length > 0;
     for (const g of list) {
       const art = document.createElement("article");
-      art.className = "case" + (g.featured ? " is-featured" : "");
+      art.className = "project-card";
       art.setAttribute("role", "listitem");
       const stamp = statusLabel(g.status);
       const cover = g.cover
@@ -721,30 +764,32 @@
       (g.platforms || []).slice(0, 2).forEach((x) => metaBits.push(`<span>${esc(x)}</span>`));
       const statsHtml = formatStats(g.stats, true);
       art.innerHTML = `
-        <button type="button" class="case-btn" data-open="${esc(g.id)}" aria-label="${esc(g.title)}">
-          <div class="poster">
+        <button type="button" class="card-trigger" data-open="${esc(g.id)}" aria-label="${esc(g.title)}">
+          <div class="card-cover">
             ${cover}
-            ${g.status ? `<span class="stamp ${esc(g.status)}">${esc(stamp)}</span>` : ""}
+            ${g.status ? `<span class="status-tag ${esc(g.status)}">${esc(stamp)}</span>` : ""}
           </div>
-          <div class="case-body">
-            <p class="case-title">${esc(g.title)}</p>
-            ${g.tagline ? `<p class="case-tagline">${esc(g.tagline)}</p>` : ""}
-            <div class="meta">${metaBits.join("")}</div>
+          <div class="card-content">
+            <h3 class="card-title">${esc(g.title)}</h3>
+            ${g.tagline ? `<p class="card-tagline">${esc(g.tagline)}</p>` : ""}
+            <div class="tags-row">${metaBits.join("")}</div>
             ${statsHtml}
           </div>
         </button>`;
       grid.appendChild(art);
     }
+    updateSummaryTotals();
   }
 
   function renderAll() {
     applyStaticI18n();
     renderHero();
+    renderSpotlight();
     renderGrid();
     updateAuthUI();
   }
 
-  function openPanel(next) {
+    function openPanel(next) {
     panel = next;
     dialogBody.innerHTML = "";
     if (panel.mode === "view") renderView(panel.gameId);
@@ -770,26 +815,23 @@
   function renderAuth() {
     const creds = getCreds();
     const isCustom = !!localStorage.getItem(CREDS_KEY);
-    dialogBody.innerHTML = `
-      <div class="sheet-head">
-        <h2>${esc(t("ownerLogin"))}</h2>
-        <button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>
-      </div>
-      <form id="authForm" class="form-grid auth-box">
-        <label class="field">${esc(t("username"))}
-          <input name="username" autocomplete="username" required value="${esc(creds.username)}" />
-        </label>
-        <label class="field">${esc(t("password"))}
-          <input name="password" type="password" autocomplete="current-password" required />
-        </label>
-        <p class="auth-error" id="authError"></p>
-        <div class="form-footer" style="justify-content:stretch">
-          <button type="submit" class="btn primary" style="width:100%">${esc(t("signIn"))}</button>
-        </div>
-        <p class="hint">${isCustom ? t("customHint") : t("defaultHint")}</p>
-        <p class="hint">${esc(t("guestHint"))}</p>
-        <button type="button" class="btn ghost" id="btnRegister" style="width:100%;margin-top:0.5rem">${esc(t("changePass"))}</button>
-      </form>`;
+    dialogBody.innerHTML = [
+      '<div class="sheet-head">',
+      `<h2>${esc(t("ownerLogin"))}</h2>`,
+      `<button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>`,
+      "</div>",
+      '<form id="authForm" class="form-grid auth-box">',
+      `<label class="field">${esc(t("username"))}<input name="username" autocomplete="username" required value="${esc(creds.username)}" /></label>`,
+      `<label class="field">${esc(t("password"))}<input name="password" type="password" autocomplete="current-password" required /></label>`,
+      '<p class="auth-error" id="authError"></p>',
+      '<div class="form-footer" style="justify-content:stretch">',
+      `<button type="submit" class="btn primary" style="width:100%">${esc(t("signIn"))}</button>`,
+      "</div>",
+      `<p class="hint">${isCustom ? t("customHint") : t("defaultHint")}</p>`,
+      `<p class="hint">${esc(t("guestHint"))}</p>`,
+      `<button type="button" class="btn ghost" id="btnRegister" style="width:100%;margin-top:0.5rem">${esc(t("changePass"))}</button>`,
+      "</form>",
+    ].join("");
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     dialogBody.querySelector("#authForm").onsubmit = async (e) => {
       e.preventDefault();
@@ -809,23 +851,24 @@
   }
 
   function renderRegister() {
-    dialogBody.innerHTML = `
-      <div class="sheet-head">
-        <h2>${esc(t("changeAccess"))}</h2>
-        <button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>
-      </div>
-      <form id="regForm" class="form-grid auth-box">
-        <label class="field">${esc(t("currentPass"))}<input name="current" type="password" required /></label>
-        <label class="field">${esc(t("newUser"))}<input name="username" required value="${esc(getCreds().username)}" /></label>
-        <label class="field">${esc(t("newPass"))}<input name="password" type="password" required minlength="6" /></label>
-        <label class="field">${esc(t("newPass2"))}<input name="password2" type="password" required minlength="6" /></label>
-        <p class="auth-error" id="authError"></p>
-        <div class="form-footer">
-          <button type="button" class="btn ghost" data-act="back">${esc(t("back"))}</button>
-          <button type="submit" class="btn primary">${esc(t("save"))}</button>
-        </div>
-        <p class="hint">${esc(t("passHint"))}</p>
-      </form>`;
+    dialogBody.innerHTML = [
+      '<div class="sheet-head">',
+      `<h2>${esc(t("changeAccess"))}</h2>`,
+      `<button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>`,
+      "</div>",
+      '<form id="regForm" class="form-grid auth-box">',
+      `<label class="field">${esc(t("currentPass"))}<input name="current" type="password" required /></label>`,
+      `<label class="field">${esc(t("newUser"))}<input name="username" required value="${esc(getCreds().username)}" /></label>`,
+      `<label class="field">${esc(t("newPass"))}<input name="password" type="password" required minlength="6" /></label>`,
+      `<label class="field">${esc(t("newPass2"))}<input name="password2" type="password" required minlength="6" /></label>`,
+      '<p class="auth-error" id="authError"></p>',
+      '<div class="form-footer">',
+      `<button type="button" class="btn ghost" data-act="back">${esc(t("back"))}</button>`,
+      `<button type="submit" class="btn primary">${esc(t("save"))}</button>`,
+      "</div>",
+      `<p class="hint">${esc(t("passHint"))}</p>`,
+      "</form>",
+    ].join("");
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     dialogBody.querySelector('[data-act="back"]').onclick = () => renderAuth();
     dialogBody.querySelector("#regForm").onsubmit = async (e) => {
@@ -852,7 +895,6 @@
       renderAll();
     };
   }
-
   function renderView(id) {
     const g = getGame(id);
     if (!g) {
@@ -862,44 +904,42 @@
     const play = safeUrl(g.playUrl);
     const trailer = safeUrl(g.trailerUrl);
     const repo = safeUrl(g.repoUrl);
-    dialogBody.innerHTML = `
-      <div class="sheet-head">
-        <div>
-          <h2>${esc(g.title)}</h2>
-          <p style="margin:0.25rem 0 0;color:var(--muted)">${esc(g.tagline || "")}</p>
-        </div>
-        <div class="sheet-actions">
-          ${isAdmin ? `<button type="button" class="btn" data-act="edit">${esc(t("edit"))}</button>` : ""}
-          <button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>
-        </div>
-      </div>
-      <div class="view-layout ${g.cover ? "has-poster" : ""}">
-        ${g.cover ? `<div class="view-poster"><img src="${esc(g.cover)}" alt="" /></div>` : ""}
-        <div>
-          <p style="white-space:pre-wrap;margin:0 0 1rem">${esc(g.description || t("noDesc"))}</p>
-          <div class="meta" style="margin:0 0 1rem">
-            <span>${esc(statusLabel(g.status))}</span>
-            ${g.year ? `<span>${esc(g.year)}</span>` : ""}
-            ${g.role ? `<span>${esc(g.role)}</span>` : ""}
-            ${(g.genres || []).map((x) => `<span>${esc(x)}</span>`).join("")}
-            ${(g.platforms || []).map((x) => `<span>${esc(x)}</span>`).join("")}
-            ${(g.tags || []).map((x) => `<span>${esc(x)}</span>`).join("")}
-          </div>
-          <div id="gameStatsBar" class="stats-bar">${formatStats(g.stats, false)}</div>
-          <div class="sheet-actions">
-            ${play ? `<a class="btn primary" href="${esc(play)}" target="_blank" rel="noopener">${esc(t("play"))}</a>` : ""}
-            ${trailer ? `<a class="btn" href="${esc(trailer)}" target="_blank" rel="noopener">${esc(t("trailer"))}</a>` : ""}
-            ${repo ? `<a class="btn" href="${esc(repo)}" target="_blank" rel="noopener">${esc(t("repo"))}</a>` : ""}
-            ${isAdmin ? `<button type="button" class="btn danger" data-act="delete">${esc(t("delete"))}</button>` : ""}
-          </div>
-          ${(g.shots || []).length ? `<div class="shots">${(g.shots || []).map((s) => `<img src="${esc(s)}" alt="" loading="lazy" />`).join("")}</div>` : ""}
-        </div>
-      </div>
-      <div class="game-comments">
-        <h3 class="game-comments-title">${esc(t("gameComments"))}</h3>
-        <p class="comments-hint">${esc(t("gameCommentsHint"))}</p>
-        <div id="gameGiscusHost"></div>
-      </div>`;
+    dialogBody.innerHTML = [
+      '<div class="sheet-head">',
+      `<div><h2>${esc(g.title)}</h2><p style="margin:0.25rem 0 0;color:var(--muted)">${esc(g.tagline || "")}</p></div>`,
+      '<div class="sheet-actions">',
+      isAdmin ? `<button type="button" class="btn" data-act="edit">${esc(t("edit"))}</button>` : "",
+      `<button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>`,
+      "</div></div>",
+      `<div class="view-layout ${g.cover ? "has-poster" : ""}">`,
+      g.cover ? `<div class="view-poster"><img src="${esc(g.cover)}" alt="" /></div>` : "",
+      "<div>",
+      `<p style="white-space:pre-wrap;margin:0 0 1rem">${esc(g.description || t("noDesc"))}</p>`,
+      '<div class="tags-row" style="margin:0 0 1rem;padding-top:0">',
+      `<span>${esc(statusLabel(g.status))}</span>`,
+      g.year ? `<span>${esc(g.year)}</span>` : "",
+      g.role ? `<span>${esc(g.role)}</span>` : "",
+      (g.genres || []).map((x) => `<span>${esc(x)}</span>`).join(""),
+      (g.platforms || []).map((x) => `<span>${esc(x)}</span>`).join(""),
+      (g.tags || []).map((x) => `<span>${esc(x)}</span>`).join(""),
+      "</div>",
+      `<div id="gameStatsBar" class="stats-bar">${formatStats(g.stats, false)}</div>`,
+      '<div class="sheet-actions">',
+      play ? `<a class="btn primary" href="${esc(play)}" target="_blank" rel="noopener">${esc(t("play"))}</a>` : "",
+      trailer ? `<a class="btn" href="${esc(trailer)}" target="_blank" rel="noopener">${esc(t("trailer"))}</a>` : "",
+      repo ? `<a class="btn" href="${esc(repo)}" target="_blank" rel="noopener">${esc(t("repo"))}</a>` : "",
+      isAdmin ? `<button type="button" class="btn danger" data-act="delete">${esc(t("delete"))}</button>` : "",
+      "</div>",
+      (g.shots || []).length
+        ? `<div class="shots">${(g.shots || []).map((s) => `<img src="${esc(s)}" alt="" loading="lazy" />`).join("")}</div>`
+        : "",
+      "</div></div>",
+      '<div class="game-comments">',
+      `<h3 class="game-comments-title">${esc(t("gameComments"))}</h3>`,
+      `<p class="comments-hint">${esc(t("gameCommentsHint"))}</p>`,
+      '<div id="gameGiscusHost"></div>',
+      "</div>",
+    ].join("");
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     const editBtn = dialogBody.querySelector('[data-act="edit"]');
     if (editBtn) editBtn.onclick = () => openPanel({ mode: "edit", gameId: id });
@@ -914,6 +954,7 @@
         state.games = state.games.filter((x) => x.id !== id);
         saveDraft();
         closePanel();
+        renderSpotlight();
         renderGrid();
       };
     mountGameGiscus(dialogBody.querySelector("#gameGiscusHost"), id);
@@ -925,7 +966,7 @@
       game.stats.siteViews = n;
       const bar = dialogBody.querySelector("#gameStatsBar");
       if (bar) bar.innerHTML = formatStats(game.stats, false) || "";
-      // refresh shelf so everyone-facing numbers stay in sync on this tab
+      renderSpotlight();
       renderGrid();
     });
   }
@@ -936,7 +977,7 @@
       title: "",
       tagline: "",
       year: new Date().getFullYear(),
-      role: "solo",
+      role: "разработка",
       status: "wip",
       genres: [],
       platforms: [],
@@ -948,6 +989,7 @@
       repoUrl: "",
       featured: false,
       tags: [],
+      stats: { downloads: 0, views: 0, plays: 0 },
     };
   }
 
@@ -972,7 +1014,6 @@
       reader.readAsDataURL(file);
     });
   }
-
   function renderForm(p) {
     const isNew = p.mode === "create";
     const g = isNew ? blankGame() : { ...getGame(p.gameId) };
@@ -981,77 +1022,45 @@
       return;
     }
     const statuses = ["released", "wip", "jam", "prototype"];
-    dialogBody.innerHTML = `
-      <div class="sheet-head">
-        <h2>${esc(isNew ? t("newGame") : t("editing"))}</h2>
-        <button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>
-      </div>
-      <form id="gameForm" class="form-grid">
-        <label class="field">${esc(t("title"))}<input name="title" required value="${esc(g.title)}" /></label>
-        <label class="field">${esc(t("tagline"))}<input name="tagline" value="${esc(g.tagline)}" /></label>
-        <div class="form-grid two">
-          <label class="field">${esc(t("year"))}<input name="year" type="number" value="${esc(g.year || "")}" /></label>
-          <label class="field">${esc(t("role"))}<input name="role" value="${esc(g.role || "")}" /></label>
-        </div>
-        <div class="form-grid two">
-          <label class="field">${esc(t("status"))}
-            <select name="status">${statuses
-              .map(
-                (k) =>
-                  `<option value="${k}" ${g.status === k ? "selected" : ""}>${esc(
-                    statusLabel(k)
-                  )}</option>`
-              )
-              .join("")}</select>
-          </label>
-          <label class="field">${esc(t("genres"))}<input name="genres" value="${esc(
-      (g.genres || []).join(", ")
-    )}" /></label>
-        </div>
-        <label class="field">${esc(t("platforms"))}<input name="platforms" value="${esc(
-      (g.platforms || []).join(", ")
-    )}" /></label>
-        <label class="field">${esc(t("description"))}<textarea name="description">${esc(
-      g.description || ""
-    )}</textarea></label>
-        <label class="field">${esc(t("playUrl"))}<input name="playUrl" type="url" value="${esc(
-      g.playUrl || ""
-    )}" /></label>
-        <div class="form-grid two">
-          <label class="field">${esc(t("trailerUrl"))}<input name="trailerUrl" type="url" value="${esc(
-      g.trailerUrl || ""
-    )}" /></label>
-          <label class="field">${esc(t("repoUrl"))}<input name="repoUrl" type="url" value="${esc(
-      g.repoUrl || ""
-    )}" /></label>
-        </div>
-        <label class="field">${esc(t("cover"))}<input name="coverFile" type="file" accept="image/*" /></label>
-        <label class="field">${esc(t("shots"))}<input name="shotsFile" type="file" accept="image/*" multiple /></label>
-        <div class="form-grid two">
-          <label class="field">${esc(t("downloads"))}
-            <input name="downloads" type="number" min="0" step="1" value="${esc(
-              g.stats && g.stats.downloads != null ? g.stats.downloads : ""
-            )}" placeholder="0" />
-          </label>
-          <label class="field">${esc(t("views"))}
-            <input name="views" type="number" min="0" step="1" value="${esc(
-              g.stats && g.stats.views != null ? g.stats.views : ""
-            )}" placeholder="0" />
-          </label>
-        </div>
-        <label class="field">${esc(t("plays"))}
-          <input name="plays" type="number" min="0" step="1" value="${esc(
-            g.stats && g.stats.plays != null ? g.stats.plays : ""
-          )}" placeholder="0" />
-        </label>
-        <label class="check-row"><input type="checkbox" name="featured" ${
-          g.featured ? "checked" : ""
-        } /> ${esc(t("featured"))}</label>
-        <div class="form-footer">
-          <button type="button" class="btn ghost" data-act="close">${esc(t("cancel"))}</button>
-          <button type="submit" class="btn primary">${esc(t("save"))}</button>
-        </div>
-      </form>`;
+    dialogBody.innerHTML = [
+      '<div class="sheet-head">',
+      `<h2>${esc(isNew ? t("newGame") : t("editing"))}</h2>`,
+      `<button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>`,
+      "</div>",
+      '<form id="gameForm" class="form-grid">',
+      `<label class="field">${esc(t("title"))}<input name="title" required value="${esc(g.title)}" /></label>`,
+      `<label class="field">${esc(t("tagline"))}<input name="tagline" value="${esc(g.tagline)}" /></label>`,
+      '<div class="form-grid two">',
+      `<label class="field">${esc(t("year"))}<input name="year" type="number" value="${esc(g.year || "")}" /></label>`,
+      `<label class="field">${esc(t("role"))}<input name="role" value="${esc(g.role || "")}" /></label>`,
+      "</div>",
+      '<div class="form-grid two">',
+      `<label class="field">${esc(t("status"))}<select name="status">${statuses.map((k) => `<option value="${k}" ${g.status === k ? "selected" : ""}>${esc(statusLabel(k))}</option>`).join("")}</select></label>`,
+      `<label class="field">${esc(t("genres"))}<input name="genres" value="${esc((g.genres || []).join(", "))}" /></label>`,
+      "</div>",
+      `<label class="field">${esc(t("platforms"))}<input name="platforms" value="${esc((g.platforms || []).join(", "))}" /></label>`,
+      `<label class="field">${esc(t("description"))}<textarea name="description">${esc(g.description || "")}</textarea></label>`,
+      `<label class="field">${esc(t("playUrl"))}<input name="playUrl" type="url" value="${esc(g.playUrl || "")}" /></label>`,
+      '<div class="form-grid two">',
+      `<label class="field">${esc(t("trailerUrl"))}<input name="trailerUrl" type="url" value="${esc(g.trailerUrl || "")}" /></label>`,
+      `<label class="field">${esc(t("repoUrl"))}<input name="repoUrl" type="url" value="${esc(g.repoUrl || "")}" /></label>`,
+      "</div>",
+      '<div class="form-grid two">',
+      `<label class="field">${esc(t("cover"))}<input name="coverFile" type="file" accept="image/*" /></label>`,
+      `<label class="field">${esc(t("shots"))}<input name="shotsFile" type="file" accept="image/*" multiple /></label>`,
+      "</div>",
+      '<div class="form-grid two">',
+      `<label class="field">${esc(t("downloads"))}<input name="downloads" type="number" min="0" step="1" value="${esc(g.stats && g.stats.downloads != null ? g.stats.downloads : "")}" placeholder="0" /></label>`,
+      `<label class="field">${esc(t("views"))}<input name="views" type="number" min="0" step="1" value="${esc(g.stats && g.stats.views != null ? g.stats.views : "")}" placeholder="0" /></label>`,
+      "</div>",
+      `<label class="field">${esc(t("plays"))}<input name="plays" type="number" min="0" step="1" value="${esc(g.stats && g.stats.plays != null ? g.stats.plays : "")}" placeholder="0" /></label>`,
+      `<label class="check-row"><input type="checkbox" name="featured" ${g.featured ? "checked" : ""} /> ${esc(t("featured"))}</label>`,
+      '<div class="form-footer">',
+      `<button type="button" class="btn ghost" data-act="close">${esc(t("cancel"))}</button>`,
+      `<button type="submit" class="btn primary">${esc(t("save"))}</button>`,
+      "</div>",
+      "</form>",
+    ].join("");
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     const form = dialogBody.querySelector("#gameForm");
     form.onsubmit = async (e) => {
@@ -1064,14 +1073,8 @@
         year: Number(fd.get("year")) || null,
         role: String(fd.get("role") || "").trim(),
         status: String(fd.get("status") || "wip"),
-        genres: String(fd.get("genres") || "")
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        platforms: String(fd.get("platforms") || "")
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        genres: String(fd.get("genres") || "").split(",").map((s) => s.trim()).filter(Boolean),
+        platforms: String(fd.get("platforms") || "").split(",").map((s) => s.trim()).filter(Boolean),
         description: String(fd.get("description") || "").trim(),
         playUrl: String(fd.get("playUrl") || "").trim(),
         trailerUrl: String(fd.get("trailerUrl") || "").trim(),
@@ -1079,24 +1082,14 @@
         featured: form.featured.checked,
         stats: {
           ...(g.stats || {}),
-          downloads: fd.get("downloads") === "" || fd.get("downloads") == null
-            ? null
-            : Number(fd.get("downloads")),
-          views: fd.get("views") === "" || fd.get("views") == null
-            ? null
-            : Number(fd.get("views")),
-          plays: fd.get("plays") === "" || fd.get("plays") == null
-            ? null
-            : Number(fd.get("plays")),
+          downloads: fd.get("downloads") === "" || fd.get("downloads") == null ? 0 : Number(fd.get("downloads")),
+          views: fd.get("views") === "" || fd.get("views") == null ? 0 : Number(fd.get("views")),
+          plays: fd.get("plays") === "" || fd.get("plays") == null ? 0 : Number(fd.get("plays")),
         },
       };
-      // clean NaN
-      ["downloads", "views", "plays"].forEach((k) => {
-        if (next.stats[k] != null && !isFinite(next.stats[k])) next.stats[k] = null;
-      });
       try {
-        if (form.coverFile.files[0])
-          next.cover = await fileToDataUrl(form.coverFile.files[0], 1280, 0.82);
+        const coverFile = form.coverFile.files.item(0);
+        if (coverFile) next.cover = await fileToDataUrl(coverFile, 1280, 0.82);
       } catch (_) {
         alert(t("coverFail"));
         return;
@@ -1121,45 +1114,37 @@
       }
       saveDraft();
       closePanel();
+      renderSpotlight();
       renderGrid();
     };
   }
 
   function renderProfileForm() {
     const p = state.profile;
-    dialogBody.innerHTML = `
-      <div class="sheet-head">
-        <h2>${esc(t("profile"))}</h2>
-        <button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>
-      </div>
-      <form id="profileForm" class="form-grid">
-        <div class="form-grid two">
-          <label class="field">${esc(t("name"))}<input name="name" required value="${esc(
-      p.name || ""
-    )}" /></label>
-          <label class="field">${esc(t("role"))} (RU)<input name="role" value="${esc(
-      p.role || ""
-    )}" /></label>
-        </div>
-        <label class="field">${esc(t("role"))} (EN)<input name="roleEn" value="${esc(
-      p.roleEn || ""
-    )}" /></label>
-        <label class="field">${esc(t("city"))}<input name="city" value="${esc(p.city || "")}" /></label>
-        <label class="field">${esc(t("about"))} (RU)<textarea name="bio">${esc(
-      p.bio || ""
-    )}</textarea></label>
-        <label class="field">${esc(t("about"))} (EN)<textarea name="bioEn">${esc(
-      p.bioEn || ""
-    )}</textarea></label>
-        <label class="field">${esc(t("links"))}<textarea name="links">${esc(
-      (p.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")
-    )}</textarea></label>
-        <div class="form-footer">
-          <button type="button" class="btn ghost" data-act="reset">${esc(t("resetPublished"))}</button>
-          <button type="button" class="btn ghost" data-act="close">${esc(t("cancel"))}</button>
-          <button type="submit" class="btn primary">${esc(t("save"))}</button>
-        </div>
-      </form>`;
+    dialogBody.innerHTML = [
+      '<div class="sheet-head">',
+      `<h2>${esc(t("profile"))}</h2>`,
+      `<button type="button" class="btn ghost" data-act="close">${esc(t("close"))}</button>`,
+      "</div>",
+      '<form id="profileForm" class="form-grid">',
+      '<div class="form-grid two">',
+      `<label class="field">${esc(t("name"))}<input name="name" required value="${esc(p.name || "")}" /></label>`,
+      `<label class="field">${esc(t("role"))} (RU)<input name="role" value="${esc(p.role || "")}" /></label>`,
+      "</div>",
+      '<div class="form-grid two">',
+      `<label class="field">${esc(t("role"))} (EN)<input name="roleEn" value="${esc(p.roleEn || "")}" /></label>`,
+      `<label class="field">${esc(t("city"))}<input name="city" value="${esc(p.city || "")}" /></label>`,
+      "</div>",
+      `<label class="field">${esc(t("about"))} (RU)<textarea name="bio">${esc(p.bio || "")}</textarea></label>`,
+      `<label class="field">${esc(t("about"))} (EN)<textarea name="bioEn">${esc(p.bioEn || "")}</textarea></label>`,
+      `<label class="field">${esc(t("links"))}<textarea name="links">${esc((p.links || []).map((l) => `${l.label} | ${l.url}`).join("\n"))}</textarea></label>`,
+      '<div class="form-footer">',
+      `<button type="button" class="btn ghost" data-act="reset">${esc(t("resetPublished"))}</button>`,
+      `<button type="button" class="btn ghost" data-act="close">${esc(t("cancel"))}</button>`,
+      `<button type="submit" class="btn primary">${esc(t("save"))}</button>`,
+      "</div>",
+      "</form>",
+    ].join("");
     dialogBody.querySelector('[data-act="close"]').onclick = closePanel;
     dialogBody.querySelector('[data-act="reset"]').onclick = () => {
       if (!confirm(t("resetConfirm"))) return;
@@ -1224,6 +1209,10 @@
     }
   }
 
+  $("btnTheme")?.addEventListener("click", () => {
+    applyTheme(theme === "light" ? "dark" : "light");
+  });
+
   $("btnLogin").onclick = () => openPanel({ mode: "auth" });
   $("btnLogout").onclick = () => {
     setSession(false);
@@ -1234,7 +1223,7 @@
   $("btnProfile").onclick = () => isAdmin && openPanel({ mode: "profile" });
   $("btnExport").onclick = () => isAdmin && exportJson();
   $("fileImport").onchange = (e) => {
-    const f = e.target.files[0];
+    const f = e.target.files.item(0);
     if (!f) return;
     const reader = new FileReader();
     reader.onload = () => importText(String(reader.result || ""));
@@ -1242,7 +1231,7 @@
     e.target.value = "";
   };
 
-  grid.addEventListener("click", (e) => {
+  document.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-open]");
     if (!btn) return;
     openPanel({ mode: "view", gameId: btn.getAttribute("data-open") });
@@ -1252,7 +1241,7 @@
     const chip = e.target.closest("[data-filter]");
     if (!chip) return;
     filter = chip.getAttribute("data-filter");
-    $("filters").querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
+    $("filters").querySelectorAll(".pill").forEach((c) => c.classList.remove("active"));
     chip.classList.add("active");
     renderGrid();
   });
@@ -1296,7 +1285,7 @@
     e.preventDefault();
     hideDropVeil();
     if (!isAdmin) return;
-    const f = e.dataTransfer?.files?.[0];
+    const f = e.dataTransfer?.files?.item(0);
     if (!f) return;
     const reader = new FileReader();
     reader.onload = () => importText(String(reader.result || ""));
@@ -1312,21 +1301,22 @@
   });
 
   async function boot() {
+    applyTheme(theme);
     hideDropVeil();
-    published = structuredClone(SEED);
+    published = structuredClone(FALLBACK_DATA);
     try {
-      const res = await fetch("data/portfolio.json", { cache: "no-store" });
+      const res = await fetch("./data/portfolio.json?v=" + Date.now(), { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        if (isValidPortfolio(data) && data.games.length > 0) published = data;
+        if (isValidPortfolio(data)) published = data;
       }
     } catch (_) {}
     isAdmin = loadSession();
     state = isAdmin ? loadDraft() || structuredClone(published) : structuredClone(published);
     renderAll();
-    // public counters — everyone sees them on cards
     hydratePublicSiteViews();
   }
 
   boot();
 })();
+
