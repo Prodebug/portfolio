@@ -1,0 +1,18 @@
+{
+  "name": "Muov — инди-игры и миры",
+  "short_name": "Muov",
+  "description": "Инди-разработчик Muov. Пиксельные платформеры, атмосферные миры, инструменты и эксперименты с механиками.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1511",
+  "theme_color": "#0f1511",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
