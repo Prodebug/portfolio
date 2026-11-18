@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Muov — Indie Games &amp; Tools</title>
+  <meta name="description" content="Indie game developer Muov. Pixel-art platformers, arcade games, and developer utilities." />
+  <meta name="theme-color" content="#0e1310" />
+  <meta name="color-scheme" content="dark light" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Muov — Indie Games &amp; Tools" />
+  <meta property="og:description" content="Indie games, game jam builds, and tools by Muov." />
+  <meta property="og:image" content="covers/hexagonia.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+
+  <script>
+    (() => {
+      try {
+        const storedTheme = localStorage.getItem("muov-theme");
+        const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+        const theme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : prefersLight ? "light" : "dark";
+        const lang = localStorage.getItem("muov-lang") === "ru" ? "ru" : "en";
+        const pref = localStorage.getItem("muov-season") || "auto";
+        const m = new Date().getMonth();
+        const calSeason = m === 11 || m <= 1 ? "winter" : m <= 4 ? "spring" : m <= 7 ? "summer" : "autumn";
+        const valid = ["autumn", "winter", "spring", "summer", "rain"];
+        const season = valid.includes(pref) ? pref : calSeason;
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.setAttribute("data-season", season);
+        document.documentElement.setAttribute("data-season-pref", valid.includes(pref) ? pref : "auto");
+        document.documentElement.lang = lang;
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", theme === "light" ? "#f4f1ea" : "#0e1310");
+      } catch (_) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <script type="application/json" id="giscusConfig">
+  {
+    "repo": "Prodebug/portfolio",
+    "repoId": "R_kgDOVZsDQw",
+    "category": "General",
+    "categoryId": "DIC_kwDOVZsDQ84DJxqO"
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#catalog">Skip to projects</a>
+
+  <div class="atmosphere-layer" aria-hidden="true">
+    <div class="ambient-wash wash-a"></div>
+    <div class="ambient-wash wash-b"></div>
+    <canvas id="weatherCanvas"></canvas>
+  </div>
+
+  <header class="topbar">
+    <div class="container topbar-row">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2.5L20.2 7.25V16.75L12 21.5L3.8 16.75V7.25L12 2.5Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+            <path d="M7.5 16V8.5L12 12.6L16.5 8.5V16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brand-meta">
+          <strong id="brandName">Muov</strong>
+          <small id="brandRole">indie developer</small>
+        </span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#featured" class="nav-link" id="navSpotlight">Spotlight</a>
+        <a href="#catalog" class="nav-link" id="navCatalog">Projects</a>
+        <a href="#craft" class="nav-link" id="navCraft">Tools</a>
+      </nav>
+
+      <div class="nav-actions" aria-label="Controls">
+        <div class="season-control" id="seasonControl">
+          <button type="button" class="ctrl-btn season-pill" id="btnSeason" aria-expanded="false" aria-haspopup="menu" aria-controls="seasonMenu" title="Weather &amp; season">
+            <span class="season-svg" id="seasonIcon" aria-hidden="true"></span>
+            <span class="season-pill-label" id="seasonLabel">Autumn</span>
+            <svg class="season-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          <div class="season-menu" id="seasonMenu" role="menu" hidden>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="auto">
+              <span class="s-ico" data-s-icon="auto" aria-hidden="true"></span>
+              <span class="s-meta"><strong>Auto</strong><small>Current season</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="autumn">
+              <span class="s-ico" data-s-icon="autumn" aria-hidden="true"></span>
+              <span class="s-meta"><strong>Autumn</strong><small>Falling leaves</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="winter">
+              <span class="s-ico" data-s-icon="winter" aria-hidden="true"></span>
+              <span class="s-meta"><strong>Winter</strong><small>Snowfall</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="spring">
+              <span class="s-ico" data-s-icon="spring" aria-hidden="true"></span>
+              <span class="s-meta"><strong>Spring</strong><small>Blossoms</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="summer">
+              <span class="s-ico" data-s-icon="summer" aria-hidden="true"></span>
+              <span class="s-meta"><strong>Summer</strong><small>Fireflies</small></span>
+            </button>
+            <button type="button" class="season-opt" role="menuitemradio" data-season-pick="rain">
+              <span class="s-ico" data-s-icon="rain" aria-hidden="true"></span>
+              <span class="s-meta"><strong>Rain</strong><small>Forest rain</small></span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="ctrl-btn icon-only" id="btnTheme" title="Switch theme" aria-label="Switch theme">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="ru">RU</button>
+        </div>
+
+        <button type="button" class="btn outline sm" id="btnLogin">Log in</button>
+
+        <button type="button" class="ctrl-btn icon-only menu-btn" id="btnMobileMenu" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Menu">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="adminNav" class="admin-ribbon" hidden>
+      <div class="container admin-ribbon-row">
+        <span class="admin-ribbon-label" id="adminRibbonTitle">Owner Mode</span>
+        <div class="admin-bar">
+          <button type="button" class="btn ghost sm" id="btnProfile">Profile</button>
+          <button type="button" class="btn ghost sm" id="btnExport">Export</button>
+          <label class="btn ghost sm file-btn">
+            <span id="importLabel">Import</span>
+            <input type="file" id="fileImport" accept="application/json,.json" hidden />
+          </label>
+          <button type="button" class="btn primary sm" id="btnAdd">+ Project</button>
+          <button type="button" class="btn ghost sm danger-text" id="btnLogout">Log out</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobileDrawer" class="mobile-drawer" hidden>
+      <div class="container mobile-drawer-inner">
+        <a href="#featured" class="mobile-link" data-close-drawer id="mobNavSpotlight">Spotlight</a>
+        <a href="#catalog" class="mobile-link" data-close-drawer id="mobNavCatalog">Projects</a>
+        <a href="#craft" class="mobile-link" data-close-drawer id="mobNavCraft">Tools</a>
+        <div class="mobile-lang-row">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="ru">RU</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top" class="container">
+    <!-- Hero -->
+    <section class="hero-stage">
+      <div class="surface-card hero-main">
+        <div class="hero-meta-row">
+          <span class="status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="heroCity">itch.io</span>
+          </span>
+          <button type="button" class="season-inline-btn" id="heroSeason" title="Weather &amp; season">
+            <span id="heroSeasonIcon" aria-hidden="true"></span>
+            <span id="heroSeasonText">Autumn</span>
+          </button>
+        </div>
+
+        <h1 class="hero-title" id="heroTitle">Muov</h1>
+        <p class="hero-bio" id="heroBio">I create games</p>
+
+        <div class="hero-actions">
+          <a href="#catalog" class="btn primary" id="btnExplore">Browse projects</a>
+          <button type="button" class="btn outline" id="btnRandom">Random game</button>
+        </div>
+
+        <div class="hero-links" id="heroLinks"></div>
+      </div>
+
+      <aside class="surface-card hero-telemetry" aria-label="Portfolio overview">
+        <div class="telemetry-top">
+          <span class="section-eyebrow" id="noteKicker">itch.io Sync</span>
+          <span class="sync-dot-label" id="syncUpdated"></span>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-cell">
+            <span class="metric-num" id="sumProjects">0</span>
+            <span class="metric-lbl" id="lblSumProjects">projects</span>
+          </div>
+          <div class="metric-cell">
+            <span class="metric-num" id="sumViews">0</span>
+            <span class="metric-lbl" id="lblSumViews">views</span>
+          </div>
+          <div class="metric-cell">
+            <span class="metric-num" id="sumDownloads">0</span>
+            <span class="metric-lbl" id="lblSumDownloads">downloads</span>
+          </div>
+        </div>
+
+        <p class="telemetry-note" id="noteText">Games and stats sync directly from muov.itch.io.</p>
+      </aside>
+    </section>
+
+    <div class="sync-toast" id="syncStatus" hidden></div>
+    <p class="admin-banner" id="adminBadge" hidden></p>
+
+    <!-- Spotlight -->
+    <section class="spotlight-wrap reveal" id="featured" hidden>
+      <div class="section-head">
+        <div>
+          <span class="section-eyebrow" id="lblSpotlightKicker">Featured</span>
+          <h2 class="section-title" id="lblSpotlight">Spotlight</h2>
+        </div>
+        <div class="spotlight-controls" id="spotlightControls" hidden>
+          <button type="button" class="ctrl-btn icon-only sm" id="btnSpotPrev" aria-label="Previous project">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <span class="spotlight-counter" id="spotCounter">1 / 1</span>
+          <button type="button" class="ctrl-btn icon-only sm" id="btnSpotNext" aria-label="Next project">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="spotlight-card" id="spotlightHost"></div>
+    </section>
+
+    <!-- Catalog -->
+    <section class="catalog-wrap reveal" id="catalog">
+      <div class="catalog-head">
+        <div class="catalog-title-block">
+          <span class="section-eyebrow" id="lblCatalogKicker">Releases &amp; Builds</span>
+          <div class="title-row">
+            <h2 class="section-title" id="lblCatalog">Projects</h2>
+            <span class="count-badge" id="visibleCount">0</span>
+          </div>
+        </div>
+
+        <div class="catalog-controls">
+          <div class="search-wrap">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input type="search" class="search-field" id="search" placeholder="Search games, tags, engines…" autocomplete="off" />
+            <button type="button" class="clear-search" id="btnClearSearch" hidden aria-label="Clear search">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <label class="sort-wrap">
+            <select class="sort-select" id="sortSelect" aria-label="Sort order">
+              <option value="featured">Featured first</option>
+              <option value="views">Most viewed</option>
+              <option value="downloads">Most downloaded</option>
+              <option value="year">Newest first</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-pills" id="filters">
+          <button type="button" class="pill active" data-filter="all">All</button>
+          <button type="button" class="pill" data-filter="released">Released</button>
+          <button type="button" class="pill" data-filter="wip">In progress</button>
+          <button type="button" class="pill" data-filter="jam">Jam</button>
+          <button type="button" class="pill" data-filter="prototype">Prototype</button>
+          <button type="button" class="pill pill-fav" data-filter="fav">Favorites</button>
+        </div>
+        <button type="button" class="active-tag-chip" id="activeTagChip" hidden></button>
+      </div>
+
+      <div class="cards-grid" id="grid" role="list"></div>
+
+      <div class="empty-box" id="empty" hidden>
+        <svg class="empty-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="m20 20-3.5-3.5"/>
+          <path d="M8 11h6"/>
+        </svg>
+        <p id="emptyText">No projects match your filter.</p>
+        <button type="button" class="btn outline sm" id="btnResetFilters">Reset filters</button>
+      </div>
+    </section>
+
+    <!-- Tools -->
+    <section class="craft-wrap reveal" id="craft">
+      <div class="surface-card craft-card">
+        <div class="craft-info">
+          <span class="section-eyebrow" id="lblCraft">Tools &amp; Stack</span>
+          <h2 class="craft-heading" id="craftHeading">Built with lightweight indie tools</h2>
+          <p class="craft-desc" id="craftDesc">Click any tool to filter matching projects in the catalog.</p>
+        </div>
+        <div class="craft-tags" id="craftTags">
+          <button type="button" class="craft-tag" data-craft-query="Godot">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="5"/><path d="M8 12h4M10 10v4M16 11h.01M17 13h.01"/></svg>
+            Godot Engine
+          </button>
+          <button type="button" class="craft-tag" data-craft-query="Pixel Art">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Pixel Art
+          </button>
+          <button type="button" class="craft-tag" data-craft-query="Aseprite">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Aseprite
+          </button>
+          <button type="button" class="craft-tag" data-craft-query="Python">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Python
+          </button>
+          <button type="button" class="craft-tag" data-craft-query="Web">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 0 0 18M12 3a14 14 0 0 1 0 18"/></svg>
+            HTML5 / Web
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-row">
+      <p id="footerText">
+        Data from <a href="https://muov.itch.io/" target="_blank" rel="noopener">muov.itch.io</a> · synced via itch.io API
+      </p>
+      <a href="#top" class="back-top" id="backTop">Back to top</a>
+    </div>
+  </footer>
+
+  <dialog class="modal-sheet" id="dialog">
+    <div class="modal-body" id="dialogBody"></div>
+  </dialog>
+
+  <dialog class="lightbox-dialog" id="lightbox">
+    <div class="lightbox-shell">
+      <div class="lightbox-bar">
+        <span class="lightbox-counter" id="lightboxCounter">1 / 1</span>
+        <button type="button" class="btn ghost sm" id="btnLightboxClose">Close</button>
+      </div>
+      <div class="lightbox-stage">
+        <button type="button" class="lightbox-nav prev" id="btnLightboxPrev" aria-label="Previous image">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <img id="lightboxImg" alt="" />
+        <button type="button" class="lightbox-nav next" id="btnLightboxNext" aria-label="Next image">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="drop-overlay" id="dropVeil" hidden>
+    <p>Drop JSON to import portfolio</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
