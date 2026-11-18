@@ -337,8 +337,8 @@ def merge(existing: dict, scraped: list[dict], api_by_id: dict[str, dict]) -> di
         "role": "инди-разработчик",
         "roleEn": "indie developer",
         "city": "itch.io",
-        "bio": "Создаю инди-игры, выстраиваю вымышленные миры и пишу истории.",
-        "bioEn": "I create indie games, build fictional worlds and write stories.",
+        "bio": "Создаю игры",
+        "bioEn": "I create games",
         "links": [
             {"label": "itch.io", "url": ITCH_USER},
             {"label": "Discord", "url": "https://discord.gg/8GpzEHQqG3"},
