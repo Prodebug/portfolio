@@ -5,27 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Muov — инди-игры и миры</title>
   <meta name="description" content="Инди-разработчик Muov. Игры, вымышленные миры, инструменты и эксперименты." />
-  <meta name="theme-color" content="#0d1310" />
-  <link rel="preconnect" href="https://googleapis.com" />
-  <link rel="preconnect" href="https://gstatic.com" crossorigin />
-  <link href="https://googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#090a0f" />
+  <script>
+    (() => {
+      try {
+        const theme = localStorage.getItem("muov-theme") === "light" ? "light" : "dark";
+        const lang = localStorage.getItem("muov-lang") === "en" ? "en" : "ru";
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.lang = lang;
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", theme === "light" ? "#f4f3ee" : "#090a0f");
+      } catch (_) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="ambient-canvas" aria-hidden="true">
-    <div class="orb orb-moss"></div>
-    <div class="orb orb-amber"></div>
-    <div class="grain"></div>
+  <div class="studio-backdrop" aria-hidden="true">
+    <div class="glow glow-mint"></div>
+    <div class="glow glow-coral"></div>
+    <div class="grid-mesh"></div>
+    <div class="grain-layer"></div>
   </div>
 
-  <header class="navbar">
-    <div class="container nav-row">
+  <header class="topbar">
+    <div class="container topbar-row">
       <a class="brand" href="#top">
-        <span class="brand-emblem" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22v-7"/>
-            <path d="M12 15c-4.5 0-7-3-7-7 4 0 7 2.5 7 7Z"/>
-            <path d="M12 12c4.5 0 7-3 7-7-4 0-7 2.5-7 7Z"/>
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2.5L20 7.1V16.9L12 21.5L4 16.9V7.1L12 2.5Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>
+            <path d="M8.5 12H11.5M10 10.5V13.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+            <circle cx="14.75" cy="11" r="1" fill="currentColor"/>
+            <circle cx="16.25" cy="13" r="1" fill="currentColor"/>
           </svg>
         </span>
         <span class="brand-meta">
@@ -34,13 +48,21 @@
         </span>
       </a>
 
-      <nav class="nav-actions" aria-label="Действия">
+      <nav class="nav-links" aria-label="Разделы">
         <a href="#featured" class="nav-link" id="navSpotlight">Главное</a>
         <a href="#catalog" class="nav-link" id="navCatalog">Проекты</a>
         <a href="#craft" class="nav-link" id="navCraft">Инструменты</a>
+      </nav>
 
-        <button type="button" class="pill-icon" id="btnTheme" title="Сменить тему" aria-label="Сменить тему">
-          <span id="themeIcon">☀</span>
+      <div class="nav-actions" aria-label="Действия">
+        <button type="button" class="icon-btn theme-btn" id="btnTheme" title="Сменить тему" aria-label="Сменить тему">
+          <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+          <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
         </button>
 
         <div class="lang-toggle" role="group" aria-label="Language">
@@ -48,55 +70,98 @@
           <button type="button" class="lang-btn" data-lang="en">EN</button>
         </div>
 
-        <div id="adminNav" class="admin-bar" hidden>
+        <button type="button" class="btn outline sm" id="btnLogin">Вход</button>
+
+        <button type="button" class="icon-btn menu-btn" id="btnMobileMenu" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Меню">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="adminNav" class="admin-ribbon" hidden>
+      <div class="container admin-ribbon-row">
+        <span class="admin-ribbon-label" id="adminRibbonTitle">Studio Admin</span>
+        <div class="admin-bar">
           <button type="button" class="btn ghost sm" id="btnProfile">Профиль</button>
           <button type="button" class="btn ghost sm" id="btnExport">Экспорт</button>
           <label class="btn ghost sm file-btn">
-            Импорт
+            <span id="importLabel">Импорт</span>
             <input type="file" id="fileImport" accept="application/json,.json" hidden />
           </label>
           <button type="button" class="btn primary sm" id="btnAdd">+ Проект</button>
-          <button type="button" class="btn ghost sm" id="btnLogout">Выйти</button>
+          <button type="button" class="btn ghost sm danger-text" id="btnLogout">Выйти</button>
         </div>
+      </div>
+    </div>
 
-        <button type="button" class="btn outline sm" id="btnLogin">Вход</button>
-      </nav>
+    <div id="mobileDrawer" class="mobile-drawer" hidden>
+      <div class="container mobile-drawer-inner">
+        <a href="#featured" class="mobile-link" data-close-drawer id="mobNavSpotlight">Главное</a>
+        <a href="#catalog" class="mobile-link" data-close-drawer id="mobNavCatalog">Проекты</a>
+        <a href="#craft" class="mobile-link" data-close-drawer id="mobNavCraft">Инструменты</a>
+      </div>
     </div>
   </header>
 
   <main id="top" class="container">
-    <!-- Bento Hero Section -->
-    <section class="bento-hero">
-      <div class="bento-card bio-box">
-        <div class="status-pill">
-          <span class="pulse-dot"></span>
-          <span id="heroCity">itch.io · открыт к идеям</span>
+    <!-- Hero Stage -->
+    <section class="hero-stage">
+      <div class="panel hero-main">
+        <div class="hero-top-row">
+          <div class="status-pill">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span id="heroCity">itch.io · открыт к идеям</span>
+          </div>
+          <span class="mono-kicker">INDIE ATELIER // 2026</span>
         </div>
+
         <h1 class="hero-title" id="heroTitle">Muov</h1>
         <p class="hero-bio" id="heroBio"></p>
+
+        <div class="hero-primary-actions">
+          <a href="#catalog" class="btn primary" id="btnExplore">Смотреть проекты</a>
+          <button type="button" class="btn surface" id="btnRandom">Случайная игра</button>
+        </div>
+
         <div class="hero-cta" id="heroLinks"></div>
       </div>
 
-      <div class="bento-side">
-        <div class="bento-card metrics-box" aria-label="Общая статистика">
-          <div class="metric">
-            <span class="metric-num" id="sumProjects">0</span>
-            <span class="metric-lbl" id="lblSumProjects">проектов</span>
+      <div class="hero-side">
+        <div class="panel telemetry-card" aria-label="Общая статистика">
+          <div class="telemetry-head">
+            <span class="mono-kicker" id="noteKicker">Живая синхронизация</span>
+            <span class="live-badge"><i class="pulse-dot sm"></i> itch.io</span>
           </div>
-          <div class="metric">
-            <span class="metric-num" id="sumViews">0</span>
-            <span class="metric-lbl" id="lblSumViews">просмотров</span>
+
+          <div class="metrics-grid">
+            <div class="metric">
+              <span class="metric-num" id="sumProjects">0</span>
+              <span class="metric-lbl" id="lblSumProjects">проектов</span>
+            </div>
+            <div class="metric">
+              <span class="metric-num" id="sumViews">0</span>
+              <span class="metric-lbl" id="lblSumViews">просмотров</span>
+            </div>
+            <div class="metric">
+              <span class="metric-num" id="sumDownloads">0</span>
+              <span class="metric-lbl" id="lblSumDownloads">скачиваний</span>
+            </div>
           </div>
-          <div class="metric">
-            <span class="metric-num" id="sumDownloads">0</span>
-            <span class="metric-lbl" id="lblSumDownloads">скачиваний</span>
+
+          <div class="telemetry-foot">
+            <p class="note-text" id="noteText">Статистика и релизы автоматически обновляются напрямую с itch.io.</p>
+            <span class="note-date" id="syncUpdated"></span>
           </div>
         </div>
 
-        <div class="bento-card note-box">
-          <span class="note-kicker" id="noteKicker">Живая синхронизация</span>
-          <p class="note-text" id="noteText">Статистика и релизы автоматически обновляются напрямую с itch.io.</p>
-          <span class="note-date" id="syncUpdated"></span>
+        <div class="panel strip-card">
+          <div class="strip-head">
+            <span class="mono-kicker" id="lblQuickLaunch">Быстрый запуск</span>
+            <span class="strip-hint" id="lblQuickHint">нажми на обложку</span>
+          </div>
+          <div class="hero-strip" id="heroStrip"></div>
         </div>
       </div>
     </section>
@@ -104,50 +169,89 @@
     <div class="sync-toast" id="syncStatus" hidden></div>
     <p class="admin-banner" id="adminBadge" hidden></p>
 
-    <!-- Spotlight Featured Project -->
+    <!-- Spotlight Featured Showcase -->
     <section class="spotlight-wrap" id="featured" hidden>
-      <div class="section-label" id="lblSpotlight">В центре внимания</div>
+      <div class="section-header">
+        <div class="section-heading-group">
+          <span class="mono-kicker" id="lblSpotlightKicker">FEATURED BUILD</span>
+          <h2 class="section-heading" id="lblSpotlight">В центре внимания</h2>
+        </div>
+        <div class="spotlight-controls" id="spotlightControls" hidden>
+          <button type="button" class="icon-btn sm" id="btnSpotPrev" aria-label="Предыдущий проект">‹</button>
+          <span class="spotlight-counter" id="spotCounter">1 / 1</span>
+          <button type="button" class="icon-btn sm" id="btnSpotNext" aria-label="Следующий проект">›</button>
+        </div>
+      </div>
       <div class="spotlight-card" id="spotlightHost"></div>
     </section>
 
     <!-- Full Catalog -->
     <section class="catalog-wrap" id="catalog">
-      <div class="catalog-bar">
+      <div class="catalog-header">
         <div class="catalog-title-group">
-          <h2 class="section-heading" id="lblCatalog">Все проекты</h2>
-          <span class="count-badge" id="visibleCount">0</span>
+          <div>
+            <span class="mono-kicker" id="lblCatalogKicker">ARCHIVE &amp; RELEASES</span>
+            <div class="title-with-count">
+              <h2 class="section-heading" id="lblCatalog">Все проекты</h2>
+              <span class="count-badge" id="visibleCount">0</span>
+            </div>
+          </div>
         </div>
 
         <div class="catalog-controls">
-          <div class="filter-pills" id="filters">
-            <button type="button" class="pill active" data-filter="all">Все</button>
-            <button type="button" class="pill" data-filter="released">Релиз</button>
-            <button type="button" class="pill" data-filter="wip">В работе</button>
-            <button type="button" class="pill" data-filter="jam">Джем</button>
+          <div class="search-wrap">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input type="search" class="search-field" id="search" placeholder="Найти игру или утилиту…" autocomplete="off" />
+            <button type="button" class="clear-search" id="btnClearSearch" hidden aria-label="Очистить поиск">×</button>
           </div>
-          <input type="search" class="search-field" id="search" placeholder="Найти игру или утилиту…" autocomplete="off" />
+
+          <label class="sort-wrap">
+            <select class="sort-select" id="sortSelect" aria-label="Сортировка">
+              <option value="featured">Рекомендуемые</option>
+              <option value="views">По просмотрам</option>
+              <option value="downloads">По скачиваниям</option>
+              <option value="year">Сначала новые</option>
+            </select>
+          </label>
         </div>
       </div>
 
+      <div class="filter-bar">
+        <div class="filter-pills" id="filters">
+          <button type="button" class="pill active" data-filter="all">Все</button>
+          <button type="button" class="pill" data-filter="released">Релиз</button>
+          <button type="button" class="pill" data-filter="wip">В работе</button>
+          <button type="button" class="pill" data-filter="jam">Джем</button>
+          <button type="button" class="pill" data-filter="prototype">Прототип</button>
+        </div>
+        <button type="button" class="active-tag-chip" id="activeTagChip" hidden></button>
+      </div>
+
       <div class="cards-grid" id="grid" role="list"></div>
-      <p class="empty-box" id="empty" hidden>Ничего не найдено.</p>
+      <div class="empty-box" id="empty" hidden>
+        <p id="emptyText">Ничего не найдено.</p>
+        <button type="button" class="btn outline sm" id="btnResetFilters">Сбросить фильтры</button>
+      </div>
     </section>
 
-    <!-- Craft & Stack Section -->
+    <!-- Craft & Arsenal Section -->
     <section class="craft-wrap" id="craft">
       <div class="craft-card">
         <div class="craft-info">
-          <span class="section-label" id="lblCraft">Подход и инструменты</span>
+          <span class="mono-kicker" id="lblCraft">Подход и инструменты</span>
           <h2 class="craft-heading" id="craftHeading">Создаю атмосферные миры, пиксельную графику и удобные утилиты</h2>
           <p class="craft-desc" id="craftDesc">От прототипов для геймджемов до законченных инди-релизов и инструментов для разработчиков.</p>
         </div>
-        <div class="craft-tags">
-          <span class="craft-tag">Godot Engine</span>
-          <span class="craft-tag">Aseprite</span>
-          <span class="craft-tag">Pixel Art</span>
-          <span class="craft-tag">Python</span>
-          <span class="craft-tag">Web / HTML5</span>
-          <span class="craft-tag">Game Design</span>
+        <div class="craft-tags" id="craftTags">
+          <button type="button" class="craft-tag" data-craft-query="Godot"><span>◆</span> Godot Engine</button>
+          <button type="button" class="craft-tag" data-craft-query="Aseprite"><span>▣</span> Aseprite</button>
+          <button type="button" class="craft-tag" data-craft-query="Pixel Art"><span>✦</span> Pixel Art</button>
+          <button type="button" class="craft-tag" data-craft-query="Python"><span>⌘</span> Python</button>
+          <button type="button" class="craft-tag" data-craft-query="Web"><span>◈</span> Web / HTML5</button>
+          <button type="button" class="craft-tag" data-craft-query="Platformer"><span>⬡</span> Game Design</button>
         </div>
       </div>
     </section>
@@ -156,7 +260,7 @@
   <footer class="site-footer">
     <div class="container footer-row">
       <p id="footerText">
-        Данные с <a href="https://itch.io" target="_blank" rel="noopener">muov.itch.io</a> · автообновление через itch.io API
+        Данные с <a href="https://muov.itch.io/" target="_blank" rel="noopener">muov.itch.io</a> · автообновление через itch.io API
       </p>
       <a href="#top" class="back-top" id="backTop">Наверх ↑</a>
     </div>
@@ -174,6 +278,22 @@
   <dialog class="modal-sheet" id="dialog">
     <div class="modal-body" id="dialogBody"></div>
   </dialog>
+
+  <dialog class="lightbox-dialog" id="lightbox">
+    <div class="lightbox-shell">
+      <div class="lightbox-bar">
+        <span class="lightbox-counter" id="lightboxCounter">1 / 1</span>
+        <button type="button" class="btn ghost sm" id="btnLightboxClose">Закрыть</button>
+      </div>
+      <div class="lightbox-stage">
+        <button type="button" class="lightbox-nav prev" id="btnLightboxPrev" aria-label="Предыдущий кадр">‹</button>
+        <img id="lightboxImg" alt="" />
+        <button type="button" class="lightbox-nav next" id="btnLightboxNext" aria-label="Следующий кадр">›</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
 
   <div class="drop-overlay" id="dropVeil" hidden>
     <p>Отпусти JSON — импортирую портфолио</p>
