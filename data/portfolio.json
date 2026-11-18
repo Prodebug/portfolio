@@ -27,6 +27,40 @@
   },
   "games": [
     {
+      "id": "hexagonia-2",
+      "title": "Hexagonia 2",
+      "tagline": "",
+      "year": 2026,
+      "role": "разработка",
+      "status": "released",
+      "genres": [
+        "Platformer",
+        "Adventure"
+      ],
+      "platforms": [
+        "Windows",
+        "Web"
+      ],
+      "description": "In this atmospheric 2D pixel-art platformer you play as Tao, a determined wanderer tasked with sealing the rifts that tore space, time, and the laws of nature themselves. Journey through seven unique realms, each with its own visual identity, rules, and dangers, as you collect the sacred Stones of Balance and return them to the Ancient Altar.",
+      "cover": "https://img.itch.zone/aW1nLzMyNDM4ODUwLnBuZw==/original/4WqTSB.png",
+      "shots": [
+        "https://img.itch.zone/aW1hZ2UvNTM4ODkxNC8zMjQzOTcyMS5wbmc=/original/cbOcAO.png",
+        "https://img.itch.zone/aW1hZ2UvNTM4ODkxNC8zMjQzOTcyMy5wbmc=/original/lhORki.png",
+        "https://img.itch.zone/aW1hZ2UvNTM4ODkxNC8zMjQzOTcyNC5wbmc=/original/F3t9x3.png",
+        "https://img.itch.zone/aW1hZ2UvNTM4ODkxNC8zMjQzOTcyMC5wbmc=/original/7VeSjc.png"
+      ],
+      "playUrl": "https://muov.itch.io/hexagonia-2",
+      "trailerUrl": "",
+      "repoUrl": "",
+      "featured": false,
+      "tags": [],
+      "itchId": "5388914",
+      "itchUrl": "https://muov.itch.io/hexagonia-2",
+      "stats": {
+        "rating": 5.0
+      }
+    },
+    {
       "id": "core-jacker",
       "title": "Core Jacker",
       "tagline": "",
@@ -206,5 +240,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-17T15:41:26Z"
+  "updatedAt": "2026-11-18T14:52:11Z"
 }
