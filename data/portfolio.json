@@ -29,7 +29,7 @@
     {
       "id": "hexagonia-2",
       "title": "Hexagonia 2",
-      "tagline": "",
+      "tagline": "A 2D pixel-art platformer adventure about saving a shattered world across seven unstable dimensions.",
       "year": 2026,
       "role": "разработка",
       "status": "released",
@@ -64,9 +64,9 @@
       "itchId": "5388914",
       "itchUrl": "https://muov.itch.io/hexagonia-2",
       "stats": {
-        "downloads": 0,
-        "views": 0,
-        "plays": 0,
+        "downloads": 4,
+        "views": 16,
+        "plays": 16,
         "rating": 5.0
       }
     },
@@ -102,16 +102,16 @@
       "itchId": "5327887",
       "itchUrl": "https://muov.itch.io/core-jacker",
       "stats": {
-        "downloads": 0,
-        "views": 0,
-        "plays": 0,
+        "downloads": 4,
+        "views": 157,
+        "plays": 157,
         "rating": 5.0
       }
     },
     {
       "id": "exeforge",
       "title": "ExeForge",
-      "tagline": "",
+      "tagline": "Turn your HTML projects and Python scripts into Windows executable applications (.exe) with ExeForge.",
       "year": 2026,
       "role": "разработка",
       "status": "released",
@@ -134,8 +134,8 @@
       "itchId": "5281935",
       "itchUrl": "https://muov.itch.io/exeforge",
       "stats": {
-        "downloads": 0,
-        "views": 0,
+        "downloads": 28,
+        "views": 92,
         "plays": 0,
         "rating": 5.0
       }
@@ -173,9 +173,9 @@
       "itchId": "5279406",
       "itchUrl": "https://muov.itch.io/depth",
       "stats": {
-        "downloads": null,
-        "views": null,
-        "plays": null,
+        "downloads": 0,
+        "views": 22,
+        "plays": 22,
         "rating": 5.0
       }
     },
@@ -216,9 +216,9 @@
       "itchId": "5245590",
       "itchUrl": "https://muov.itch.io/glance-up-winter-edition",
       "stats": {
-        "downloads": null,
-        "views": null,
-        "plays": null,
+        "downloads": 16,
+        "views": 79,
+        "plays": 79,
         "rating": 5.0
       }
     },
@@ -259,12 +259,12 @@
       "itchId": "4820915",
       "itchUrl": "https://muov.itch.io/hexagonia",
       "stats": {
-        "downloads": 10,
-        "views": 34,
+        "downloads": 11,
+        "views": 49,
         "plays": 10,
         "rating": 5.0
       }
     }
   ],
-  "updatedAt": "2026-11-18T16:10:42Z"
+  "updatedAt": "2026-11-18T16:15:52Z"
 }
