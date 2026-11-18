@@ -60,20 +60,18 @@ def fetch_api_games(api_key: str) -> dict[str, dict]:
         gid = str(item.get("id") or "")
         if not gid:
             continue
+        raw_url = str(item.get("url") or "")
         by_id[gid] = {
             "itchId": gid,
             "title": clean_text(item.get("title") or ""),
             "tagline": clean_text(item.get("short_text") or ""),
-            "itchUrl": (item.get("url") or "").split("?")[0],
+            "itchUrl": raw_url.split("?")[0],
             "cover": item.get("cover_url") or "",
             "published": bool(item.get("published", True)),
             "publishedAt": item.get("published_at") or item.get("created_at") or "",
             "views": int(item.get("views_count") or 0),
             "downloads": int(item.get("downloads_count") or 0),
             "purchases": int(item.get("purchases_count") or 0),
-            "canBeBought": bool(item.get("can_be_bought", False)),
-            "inPressSystem": bool(item.get("in_press_system", False)),
-            "hasDemo": bool(item.get("has_demo", False)),
             "platforms_api": [
                 name
                 for flag, name in (
@@ -274,10 +272,10 @@ def merge(existing: dict, scraped: list[dict], api_by_id: dict[str, dict]) -> di
             game = dict(old)
             game["itchId"] = gid_str
             game["itchUrl"] = actual_url
-game["playUrl"] = actual_url
-if fresh_title:
-game["title"] = fresh_title
-if api_item.get("tagline") and not game.get("tagline"):
+            game["playUrl"] = actual_url
+            if fresh_title:
+                game["title"] = fresh_title
+            if api_item.get("tagline") and not game.get("tagline"):
 game["tagline"] = api_item["tagline"]
 if fresh_cover and (not game.get("cover") or str(game["cover"]).startswith("http")):
 game["cover"] = fresh_cover
