@@ -1,0 +1,44 @@
+name: Sync itch.io portfolio
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/sync_itch.py"
+      - ".github/workflows/sync-itch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run itch.io sync
+        env:
+          ITCH_API_KEY: ${{ secrets.ITCH_API_KEY }}
+        run: python3 scripts/sync_itch.py
+
+      - name: Commit updated portfolio.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/portfolio.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: sync itch.io stats and games"
+            git pull --rebase --autostash origin main || true
+            git push
+          fi
