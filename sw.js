@@ -1,4 +1,4 @@
-const CACHE_NAME = "muov-portfolio-v1";
+const CACHE_NAME = "muov-portfolio-v2";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -31,8 +31,13 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Network-first for portfolio.json so itch.io sync stays fresh
-  if (url.pathname.endsWith("/data/portfolio.json")) {
+  // Network-first for app shell & data so fresh updates and stats appear immediately
+  const isCodeOrData =
+    request.mode === "navigate" ||
+    /\.(html|js|css|json|webmanifest)$/i.test(url.pathname) ||
+    url.pathname.endsWith("/");
+
+  if (isCodeOrData) {
     event.respondWith(
       fetch(request)
         .then((res) => {
@@ -47,19 +52,17 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Stale-while-revalidate for local static files
+  // Cache-first for static images/icons
   event.respondWith(
     caches.match(request).then((cached) => {
-      const fresh = fetch(request)
-        .then((res) => {
-          if (res.ok) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then((c) => c.put(request, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || fresh;
+      if (cached) return cached;
+      return fetch(request).then((res) => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(request, copy));
+        }
+        return res;
+      });
     })
   );
 });
