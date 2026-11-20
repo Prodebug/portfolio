@@ -16,11 +16,18 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "portfolio.json"
 HOST = "itch.io"
 ITCH_USER = "https://muov." + HOST + "/"
-UA = "MuovPortfolioSync/3.0 (+github actions)"
+UA = "Mozilla/5.0 (compatible; MuovPortfolioSync/3.1; +https://github.com/Prodebug/portfolio)"
 
 
 def fetch_text(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": UA,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+        },
+    )
     with urllib.request.urlopen(req, timeout=30) as r:
         return r.read().decode("utf-8", "replace")
 
@@ -353,10 +360,39 @@ def merge(existing: dict, scraped: list[dict], api_by_id: dict[str, dict]) -> di
             if g.get(key) and HOST in str(g[key]):
                 by_url[str(g[key]).rstrip("/")] = g
 
-    merged, seen_ids = [], set()
+    merged, seen_ids, seen_itch = [], set(), set()
 
-    for s in scraped:
+    # Merge scraped profile games + any games only present in API response
+    entries = list(scraped)
+    scraped_ids = {str(s.get("itchId") or "") for s in entries}
+    for gid_str, api_item in api_by_id.items():
+        if gid_str and gid_str not in scraped_ids:
+            raw_u = str(api_item.get("itchUrl") or "").rstrip("/")
+            slug = raw_u.split("/")[-1] if raw_u else slug_id(api_item.get("title") or gid_str)
+            entries.append(
+                {
+                    "itchId": gid_str,
+                    "slug": slug,
+                    "itchUrl": raw_u,
+                    "title": api_item.get("title") or slug,
+                    "cover": api_item.get("cover") or "",
+                }
+            )
+
+    # Guard against complete scrape/API outage: preserve existing games instead of wiping
+    if not entries and old_games:
+        merged = list(old_games)
+        return {
+            "profile": profile,
+            "games": merged,
+            "updatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+
+    for s in entries:
         gid_str = str(s["itchId"])
+        if gid_str in seen_itch:
+            continue
+        seen_itch.add(gid_str)
         api_item = api_by_id.get(gid_str) or {}
         actual_url = re.sub(r"\?.*$", "", str(api_item.get("itchUrl") or s["itchUrl"])).rstrip("/")
         old = by_itch.get(gid_str) or by_url.get(actual_url) or by_url.get(s["itchUrl"].rstrip("/"))
@@ -471,9 +507,13 @@ def merge(existing: dict, scraped: list[dict], api_by_id: dict[str, dict]) -> di
 def main() -> None:
     api_key = os.environ.get("ITCH_API_KEY", "").strip()
     api_by_id = fetch_api_games(api_key)
-    html = fetch_text(ITCH_USER)
-    scraped = parse_profile_games(html)
-    print(f"public profile: found {len(scraped)} game(s)")
+    scraped: list[dict] = []
+    try:
+        html = fetch_text(ITCH_USER)
+        scraped = parse_profile_games(html)
+        print(f"public profile: found {len(scraped)} game(s)")
+    except Exception as e:
+        print(f"warn: public profile fetch failed: {e}")
     existing = (
         json.loads(DATA.read_text(encoding="utf-8"))
         if DATA.exists()
