@@ -225,6 +225,9 @@
       nextFrame: "Next image",
       menuLabel: "Menu",
       craftFiltered: (q) => `Filtered by ${q}`,
+      dayToday: "today",
+      dayYesterday: "yesterday",
+      daysAgo: (n) => `${n}d ago`,
       fileCorsWarn:
         "Opened via file:// — browser blocks loading data/portfolio.json. Run a local server (python -m http.server).",
     },
@@ -383,6 +386,19 @@
       nextFrame: "Следующий кадр",
       menuLabel: "Меню",
       craftFiltered: (q) => `Фильтр: ${q}`,
+      dayToday: "сегодня",
+      dayYesterday: "вчера",
+      daysAgo: (n) => {
+        const mod10 = n % 10;
+        const mod100 = n % 100;
+        const word =
+          mod10 === 1 && mod100 !== 11
+            ? "день"
+            : mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)
+            ? "дня"
+            : "дней";
+        return `${n} ${word} назад`;
+      },
       fileCorsWarn:
         "Открыто через file:// — браузер блокирует загрузку data/portfolio.json. Запустите локальный сервер (python -m http.server).",
     },
@@ -458,6 +474,14 @@
 
   const siteViewsCache = new Map();
   const viewedInSession = new Set();
+  const SITE_VISIT_KEY = "site-visits";
+  const AUTO_REFRESH_MS = 5 * 60 * 1000;
+  const MIN_REFRESH_GAP_MS = 60 * 1000;
+  let siteVisitsCount = 0;
+  let siteVisitRecorded = false;
+  let lastLiveRefreshAt = 0;
+  let liveRefreshPromise = null;
+  let midnightTimerId = null;
 
   function loadFavorites() {
     try {
@@ -681,13 +705,39 @@
     return `<div class="stats-row">${items.join("")}</div>`;
   }
 
+  function formatSyncDateText(iso) {
+    if (!iso) return { text: "", title: "" };
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return { text: "", title: "" };
+    const locale = lang === "ru" ? "ru-RU" : "en-US";
+    const formatted = d.toLocaleDateString(locale, { dateStyle: "medium" });
+    const now = new Date();
+    const startOfDay = (dt) => new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
+    const diffDays = Math.round((startOfDay(now) - startOfDay(d)) / 86400000);
+    let rel = "";
+    if (diffDays === 0) rel = t("dayToday");
+    else if (diffDays === 1) rel = t("dayYesterday");
+    else if (diffDays > 1 && typeof t("daysAgo") === "function") rel = t("daysAgo")(diffDays);
+    const text = rel ? `${t("updatedPrefix")}${formatted} · ${rel}` : `${t("updatedPrefix")}${formatted}`;
+    return { text, title: d.toLocaleString(locale) };
+  }
+
+  function renderSyncUpdated() {
+    const updatedEl = $("syncUpdated");
+    if (!updatedEl) return;
+    const { text, title } = formatSyncDateText(state?.updatedAt);
+    updatedEl.textContent = text;
+    if (title) updatedEl.title = title;
+  }
+
   function updateSummaryTotals() {
     const games = state?.games || [];
-    let totalViews = 0;
+    let totalViews = Math.max(0, Number(siteVisitsCount) || 0);
     let totalDownloads = 0;
     for (const g of games) {
       const st = g.stats || {};
       totalViews += Math.max(0, Number(st.views) || 0);
+      totalViews += Math.max(0, Number(st.siteViews) || 0);
       totalDownloads += Math.max(0, Number(st.downloads) || 0);
     }
     if ($("sumProjects")) $("sumProjects").textContent = formatNum(games.length);
@@ -701,20 +751,28 @@
       .slice(0, 48);
   }
 
-  async function counterGet(gameId) {
+  async function counterRequest(op, keyName) {
     try {
-      const key = counterKey(gameId);
+      const key = counterKey(keyName);
       const res = await fetch(
-        `https://abacus.jasoncameron.dev/get/${COUNTER_NAMESPACE}/${encodeURIComponent(key)}`,
+        `https://abacus.jasoncameron.dev/${op}/${COUNTER_NAMESPACE}/${encodeURIComponent(key)}`,
         { cache: "no-store" }
       );
-      if (!res.ok) return 0;
+      if (!res.ok) return null;
       const data = await res.json();
-      if (data && data.error) return 0;
-      return typeof data?.value === "number" ? data.value : 0;
+      if (data && data.error) return op === "get" ? 0 : null;
+      return typeof data?.value === "number" ? data.value : null;
     } catch (_) {
-      return 0;
+      return null;
     }
+  }
+
+  function counterGet(keyName) {
+    return counterRequest("get", keyName);
+  }
+
+  function counterHit(keyName) {
+    return counterRequest("hit", keyName);
   }
 
   async function bumpSiteView(gameId) {
@@ -722,21 +780,24 @@
       return siteViewsCache.has(gameId) ? siteViewsCache.get(gameId) : null;
     }
     viewedInSession.add(gameId);
-    try {
-      const key = counterKey(gameId);
-      const res = await fetch(
-        `https://abacus.jasoncameron.dev/hit/${COUNTER_NAMESPACE}/${encodeURIComponent(key)}`,
-        { cache: "no-store" }
-      );
-      if (!res.ok) return null;
-      const data = await res.json();
-      if (typeof data?.value === "number") {
-        siteViewsCache.set(gameId, data.value);
-        return data.value;
-      }
-      return null;
-    } catch (_) {
-      return null;
+    const val = await counterHit(gameId);
+    if (typeof val === "number") {
+      siteViewsCache.set(gameId, val);
+      return val;
+    }
+    viewedInSession.delete(gameId);
+    return null;
+  }
+
+  async function hydrateSiteVisit() {
+    const useHit = !siteVisitRecorded;
+    if (useHit) siteVisitRecorded = true;
+    const val = useHit ? await counterHit(SITE_VISIT_KEY) : await counterGet(SITE_VISIT_KEY);
+    if (typeof val === "number") {
+      siteVisitsCount = Math.max(0, val);
+      updateSummaryTotals();
+    } else if (useHit) {
+      siteVisitRecorded = false;
     }
   }
 
@@ -757,13 +818,14 @@
     await Promise.all(
       games.map(async (g) => {
         const n = await counterGet(g.id);
-        const val = typeof n === "number" ? n : 0;
-        siteViewsCache.set(g.id, val);
+        if (typeof n !== "number") return;
+        siteViewsCache.set(g.id, n);
         g.stats = g.stats || {};
-        g.stats.siteViews = val;
+        g.stats.siteViews = n;
       })
     );
     updateSiteViewDom();
+    updateSummaryTotals();
   }
 
   function updateSiteViewDom(onlyId = "") {
@@ -1110,15 +1172,7 @@
     const dropP = dropVeil?.querySelector("p");
     if (dropP) dropP.textContent = t("drop");
 
-    const updatedEl = $("syncUpdated");
-    if (updatedEl) {
-      updatedEl.textContent = state?.updatedAt
-        ? t("updatedPrefix") +
-          new Date(state.updatedAt).toLocaleDateString(lang === "ru" ? "ru-RU" : "en-US", {
-            dateStyle: "medium",
-          })
-        : "";
-    }
+    renderSyncUpdated();
 
     const foot = $("footerText");
     if (foot) {
@@ -1179,7 +1233,9 @@
       list = list.filter((g) => g.status === filter);
     }
     if (sortMode === "views") {
-      list.sort((a, b) => (Number(b.stats?.views) || 0) - (Number(a.stats?.views) || 0));
+      const totalGameViews = (g) =>
+        (Number(g.stats?.views) || 0) + (Number(g.stats?.siteViews) || 0);
+      list.sort((a, b) => totalGameViews(b) - totalGameViews(a));
     } else if (sortMode === "downloads") {
       list.sort(
         (a, b) => (Number(b.stats?.downloads) || 0) - (Number(a.stats?.downloads) || 0)
@@ -1742,6 +1798,7 @@
       game.stats = game.stats || {};
       game.stats.siteViews = n;
       updateSiteViewDom(id);
+      updateSummaryTotals();
     });
   }
 
@@ -2784,22 +2841,182 @@
     btn.addEventListener("click", () => setLang(btn.dataset.lang));
   });
 
+  async function fetchJsonNoStore(url) {
+    try {
+      const sep = url.includes("?") ? "&" : "?";
+      const res = await fetch(`${url}${sep}v=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return isValidPortfolio(data) ? data : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function getUpstreamPortfolioUrl() {
+    const repo = String(giscusBaseAttrs()?.repo || "").trim();
+    if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo)) return "";
+    return `https://raw.githubusercontent.com/${repo}/main/data/portfolio.json`;
+  }
+
+  function parseIsoMs(iso) {
+    if (!iso) return 0;
+    const ms = Date.parse(iso);
+    return Number.isFinite(ms) ? ms : 0;
+  }
+
+  function portfolioSignalSum(data) {
+    return (data?.games || []).reduce(
+      (acc, g) =>
+        acc +
+        (Number(g?.stats?.views) || 0) +
+        (Number(g?.stats?.downloads) || 0) +
+        (Number(g?.stats?.plays) || 0),
+      0
+    );
+  }
+
+  function shouldAdoptRemotePortfolio(current, remote) {
+    if (!isValidPortfolio(remote)) return false;
+    if (!isValidPortfolio(current) || !current.games.length) return true;
+    const curMs = parseIsoMs(current.updatedAt);
+    const remMs = parseIsoMs(remote.updatedAt);
+    if (remMs > curMs) return true;
+    if (remMs < curMs) return false;
+    return (
+      remote.games.length !== current.games.length ||
+      portfolioSignalSum(remote) > portfolioSignalSum(current)
+    );
+  }
+
+  function mergePortfolioData(base, incoming) {
+    const merged = structuredClone(incoming);
+    const baseById = new Map((base?.games || []).map((g) => [g.id, g]));
+    merged.games = (merged.games || []).map((g) => {
+      const prev = baseById.get(g.id);
+      const nextStats = { ...(prev?.stats || {}), ...(g.stats || {}) };
+      if (prev?.stats) {
+        for (const k of ["views", "downloads", "plays"]) {
+          const a = Number(prev.stats[k]) || 0;
+          const b = Number(g.stats?.[k]) || 0;
+          if (Math.max(a, b) > 0) nextStats[k] = Math.max(a, b);
+        }
+      }
+      if (siteViewsCache.has(g.id)) {
+        nextStats.siteViews = siteViewsCache.get(g.id);
+      }
+      return { ...g, stats: nextStats };
+    });
+    return merged;
+  }
+
+  async function syncRemotePortfolio(allowLocal = true) {
+    const urls = [];
+    if (allowLocal && location.protocol !== "file:") {
+      urls.push("./data/portfolio.json");
+    }
+    const upstream = getUpstreamPortfolioUrl();
+    if (upstream) urls.push(upstream);
+    if (!urls.length) return false;
+
+    const results = await Promise.all(urls.map((u) => fetchJsonNoStore(u)));
+    let best = null;
+    for (const candidate of results) {
+      if (candidate && (!best || shouldAdoptRemotePortfolio(best, candidate))) {
+        best = candidate;
+      }
+    }
+    if (!best || !shouldAdoptRemotePortfolio(published, best)) return false;
+
+    published = mergePortfolioData(published, best);
+    const hasDraft = isAdmin && !!loadDraft();
+    if (!hasDraft) {
+      state = structuredClone(published);
+      applyCachedSiteViews();
+      renderAll();
+    }
+    return true;
+  }
+
+  function syncCalendarAndRelativeDates() {
+    renderSyncUpdated();
+    if (seasonPref === "auto") {
+      const active = document.documentElement.getAttribute("data-season");
+      if (active !== resolvedSeason()) applySeason("auto", false);
+    }
+  }
+
+  function refreshLiveState({ initial = false, force = false } = {}) {
+    syncCalendarAndRelativeDates();
+    const now = Date.now();
+    if (!initial && !force && now - lastLiveRefreshAt < MIN_REFRESH_GAP_MS) {
+      return liveRefreshPromise || Promise.resolve();
+    }
+    if (liveRefreshPromise) return liveRefreshPromise;
+    lastLiveRefreshAt = now;
+    liveRefreshPromise = (async () => {
+      try {
+        await Promise.all([
+          syncRemotePortfolio(!initial),
+          hydrateSiteVisit(),
+          hydratePublicSiteViews(),
+        ]);
+        syncCalendarAndRelativeDates();
+      } finally {
+        liveRefreshPromise = null;
+      }
+    })();
+    return liveRefreshPromise;
+  }
+
+  function scheduleMidnightRefresh() {
+    if (midnightTimerId) {
+      clearTimeout(midnightTimerId);
+      midnightTimerId = null;
+    }
+    const now = new Date();
+    const nextMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+      0,
+      0,
+      2
+    );
+    const delay = Math.max(1000, nextMidnight.getTime() - now.getTime());
+    midnightTimerId = setTimeout(() => {
+      syncCalendarAndRelativeDates();
+      refreshLiveState({ force: true });
+      scheduleMidnightRefresh();
+    }, delay);
+    midnightTimerId?.unref?.();
+  }
+
+  function initAutoRefresh() {
+    if (typeof setInterval === "function") {
+      const iv = setInterval(() => refreshLiveState({ force: false }), AUTO_REFRESH_MS);
+      iv?.unref?.();
+    }
+    scheduleMidnightRefresh();
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshLiveState({ force: false });
+    });
+    window.addEventListener("focus", () => refreshLiveState({ force: false }));
+  }
+
   async function boot() {
     applyTheme(theme);
     applySeason(seasonPref, false);
     hideDropVeil();
     published = structuredClone(FALLBACK_DATA);
     let loadedJson = false;
-    try {
-      const res = await fetch("./data/portfolio.json?v=" + Date.now(), { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        if (isValidPortfolio(data)) {
-          published = data;
-          loadedJson = true;
-        }
+    if (location.protocol !== "file:") {
+      const localData = await fetchJsonNoStore("./data/portfolio.json");
+      if (localData) {
+        published = localData;
+        loadedJson = true;
       }
-    } catch (_) {}
+    }
 
     isAdmin = loadSession();
     const draft = isAdmin ? loadDraft() : null;
@@ -2809,11 +3026,9 @@
     initWeatherCanvas();
     initScrollAndReveal();
     registerServiceWorker();
+    initAutoRefresh();
 
     if (isAdmin && draft) showDraftStatus("draftActive");
-    if (!loadedJson && location.protocol === "file:") {
-      toast(t("fileCorsWarn"), "err", 7000);
-    }
 
     if (location.hash && location.hash.startsWith("#game=")) {
       const targetId = decodeURIComponent(location.hash.slice(6));
@@ -2822,7 +3037,10 @@
       }
     }
 
-    hydratePublicSiteViews();
+    await refreshLiveState({ initial: true });
+    if (!loadedJson && !published.games.length && location.protocol === "file:") {
+      toast(t("fileCorsWarn"), "err", 7000);
+    }
   }
 
   boot();
