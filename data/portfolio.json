@@ -65,7 +65,7 @@
       "itchUrl": "https://muov.itch.io/hexagonia-2",
       "stats": {
         "downloads": 4,
-        "views": 18,
+        "views": 19,
         "plays": 16,
         "rating": 5.0
       }
@@ -103,7 +103,7 @@
       "itchUrl": "https://muov.itch.io/core-jacker",
       "stats": {
         "downloads": 4,
-        "views": 179,
+        "views": 180,
         "plays": 157,
         "rating": 5.0
       }
@@ -135,7 +135,7 @@
       "itchUrl": "https://muov.itch.io/exeforge",
       "stats": {
         "downloads": 30,
-        "views": 106,
+        "views": 109,
         "plays": 0,
         "rating": 5.0
       }
@@ -174,7 +174,7 @@
       "itchUrl": "https://muov.itch.io/depth",
       "stats": {
         "downloads": 0,
-        "views": 24,
+        "views": 25,
         "plays": 22,
         "rating": 5.0
       }
@@ -217,7 +217,7 @@
       "itchUrl": "https://muov.itch.io/glance-up-winter-edition",
       "stats": {
         "downloads": 16,
-        "views": 80,
+        "views": 81,
         "plays": 79,
         "rating": 5.0
       }
@@ -266,5 +266,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-24T14:41:44Z"
+  "updatedAt": "2026-11-25T00:30:51Z"
 }
