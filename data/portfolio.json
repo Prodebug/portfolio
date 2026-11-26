@@ -65,7 +65,7 @@
       "itchUrl": "https://muov.itch.io/hexagonia-2",
       "stats": {
         "downloads": 4,
-        "views": 19,
+        "views": 20,
         "plays": 16,
         "rating": 5.0
       }
@@ -103,7 +103,7 @@
       "itchUrl": "https://muov.itch.io/core-jacker",
       "stats": {
         "downloads": 4,
-        "views": 180,
+        "views": 181,
         "plays": 157,
         "rating": 5.0
       }
@@ -266,5 +266,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-25T14:04:32Z"
+  "updatedAt": "2026-11-26T00:06:52Z"
 }
