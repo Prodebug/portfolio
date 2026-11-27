@@ -103,7 +103,7 @@
       "itchUrl": "https://muov.itch.io/core-jacker",
       "stats": {
         "downloads": 4,
-        "views": 181,
+        "views": 182,
         "plays": 157,
         "rating": 5.0
       }
@@ -174,7 +174,7 @@
       "itchUrl": "https://muov.itch.io/depth",
       "stats": {
         "downloads": 0,
-        "views": 25,
+        "views": 26,
         "plays": 22,
         "rating": 5.0
       }
@@ -266,5 +266,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-26T13:42:24Z"
+  "updatedAt": "2026-11-27T00:28:02Z"
 }
