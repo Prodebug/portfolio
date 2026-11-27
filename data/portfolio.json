@@ -65,7 +65,7 @@
       "itchUrl": "https://muov.itch.io/hexagonia-2",
       "stats": {
         "downloads": 4,
-        "views": 20,
+        "views": 21,
         "plays": 16,
         "rating": 5.0
       }
@@ -134,8 +134,8 @@
       "itchId": "5281935",
       "itchUrl": "https://muov.itch.io/exeforge",
       "stats": {
-        "downloads": 31,
-        "views": 112,
+        "downloads": 33,
+        "views": 117,
         "plays": 0,
         "rating": 5.0
       }
@@ -266,5 +266,5 @@
       }
     }
   ],
-  "updatedAt": "2026-11-27T13:39:35Z"
+  "updatedAt": "2026-11-27T23:58:21Z"
 }
